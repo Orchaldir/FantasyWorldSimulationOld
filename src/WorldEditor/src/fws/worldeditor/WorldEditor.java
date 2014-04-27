@@ -16,6 +16,7 @@ import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.Cell;
 import fws.utility.map.ColorRenderer;
+import fws.utility.map.RandomColorSelector;
 import fws.utility.map.SquareMap;
 
 public class WorldEditor
@@ -76,7 +77,7 @@ public class WorldEditor
 		}
 		
 		map_ = new SquareMap<>(width, height, cells);
-		renderer_ = new ColorRenderer(map_, cell_size, border);
+		renderer_ = new ColorRenderer(map_, cell_size, border, new RandomColorSelector<Cell>());
 	}
 
 	public void create() throws LWJGLException

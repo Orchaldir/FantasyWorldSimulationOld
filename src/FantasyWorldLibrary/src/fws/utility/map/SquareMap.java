@@ -1,14 +1,12 @@
 package fws.utility.map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.*;
 
 public class SquareMap<T extends Cell> implements Map<T>
 {
 	private final int width_;
 	private final int height_;
 	private T[] cells_;
-	
 	
 	public SquareMap(int width, int height, T[] cells)
 	{
