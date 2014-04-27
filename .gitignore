@@ -1,4 +1,6 @@
 *.class
+*.log
+*~
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -13,3 +15,6 @@ hs_err_pid*
 /src/WorldEditor/nbproject/private/
 /src/WorldEditor/build/
 /src/WorldEditor/dist/
+/src/FantasyWorldLibrary/nbproject/private/
+/src/FantasyWorldLibrary/build/
+/src/FantasyWorldLibrary/dist/
