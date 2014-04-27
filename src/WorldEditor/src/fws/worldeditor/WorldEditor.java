@@ -15,6 +15,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.Cell;
+import fws.utility.map.ColorRenderer;
 import fws.utility.map.SquareMap;
 
 public class WorldEditor
@@ -23,13 +24,9 @@ public class WorldEditor
 	public static final int DISPLAY_HEIGHT = 480;
 	public static final int DISPLAY_WIDTH = 640;
 	public static final Logger LOGGER = Logger.getLogger(WorldEditor.class.getName());
-
-	private int squareSize;
-	private int squareX;
-	private int squareY;
-	private int squareZ;
 	
 	private SquareMap<Cell> map_;
+	private ColorRenderer renderer_;
 
 	static
 	{
@@ -48,10 +45,6 @@ public class WorldEditor
 		try
 		{
 			System.out.println("Keys:");
-			System.out.println("down  - Shrink");
-			System.out.println("up    - Grow");
-			System.out.println("left  - Rotate left");
-			System.out.println("right - Rotate right");
 			System.out.println("esc   - Exit");
 			main = new WorldEditor();
 			main.create();
@@ -70,13 +63,10 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
-		squareSize = 100;
-		squareX = 0;
-		squareY = 0;
-		squareZ = 0;
-		
 		int width = 20;
 		int height = 10;
+		int cell_size = 20;
+		int border = 1;
 		
 		Cell[] cells = new Cell[width*height];
 		
@@ -86,6 +76,7 @@ public class WorldEditor
 		}
 		
 		map_ = new SquareMap<>(width, height, cells);
+		renderer_ = new ColorRenderer(map_, cell_size, border);
 	}
 
 	public void create() throws LWJGLException
@@ -126,53 +117,20 @@ public class WorldEditor
 
 	public void processKeyboard()
 	{
-		//Square's Size
-		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-		{
-			--squareSize;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_UP))
-		{
-			++squareSize;
-		}
-
-		//Square's Z
-		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-		{
-			++squareZ;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-		{
-			--squareZ;
-		}
+		
 	}
 
 	public void processMouse()
 	{
-		squareX = Mouse.getX();
-		squareY = Mouse.getY();
+		
 	}
 
 	public void render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 		glLoadIdentity();
-
-		//Draw a basic square
-		glTranslatef(squareX, squareY, 0.0f);
-		glRotatef(squareZ, 0.0f, 0.0f, 1.0f);
-		glTranslatef(-(squareSize >> 1), -(squareSize >> 1), 0.0f);
-		glColor3f(0.0f, 0.5f, 0.5f);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex2f(0.0f, 0.0f);
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(squareSize, 0.0f);
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(squareSize, squareSize);
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(0.0f, squareSize);
-		glEnd();
+		
+		renderer_.render();
 	}
 
 	public void resizeGL()
@@ -220,13 +178,7 @@ public class WorldEditor
 
 	public void update()
 	{
-		if(squareSize < 5)
-		{
-			squareSize = 5;
-		} else if(squareSize >= DISPLAY_HEIGHT)
-		{
-			squareSize = DISPLAY_HEIGHT;
-		}
+		
 	}
 
 }
