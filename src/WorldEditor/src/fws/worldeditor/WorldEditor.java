@@ -14,10 +14,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
-import fws.utility.map.Cell;
-import fws.utility.map.ColorRenderer;
-import fws.utility.map.RandomColorSelector;
-import fws.utility.map.SquareMap;
+import fws.utility.map.*;
 
 public class WorldEditor
 {
@@ -26,7 +23,7 @@ public class WorldEditor
 	public static final int DISPLAY_WIDTH = 640;
 	public static final Logger LOGGER = Logger.getLogger(WorldEditor.class.getName());
 	
-	private SquareMap<Cell> map_;
+	private Map<Cell> map_;
 	private ColorRenderer renderer_;
 
 	static
@@ -66,8 +63,8 @@ public class WorldEditor
 	{
 		int width = 20;
 		int height = 10;
-		int cell_size = 20;
-		int border = 1;
+		int cell_size = 30;
+		int border = 2;
 		
 		Cell[] cells = new Cell[width*height];
 		
@@ -76,7 +73,8 @@ public class WorldEditor
 			cells[index] = new Cell(index);
 		}
 		
-		map_ = new SquareMap<>(width, height, cells);
+		//map_ = new SquareMap<>(width, height, cells);
+		map_ = new HexMap<>(width, height, cells);
 		renderer_ = new ColorRenderer(map_, cell_size, border, new RandomColorSelector<Cell>());
 	}
 

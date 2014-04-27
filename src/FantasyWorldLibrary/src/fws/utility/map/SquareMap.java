@@ -2,44 +2,14 @@ package fws.utility.map;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class SquareMap<T extends Cell> implements Map<T>
+public class SquareMap<T extends Cell> extends Map<T>
 {
-	private final int width_;
-	private final int height_;
-	private T[] cells_;
-	
 	public SquareMap(int width, int height, T[] cells)
 	{
-		width_ = width;
-		height_ = height;
-		cells_ = cells;
+		super(width, height, cells);
 	}
 	
-	// index
-	
-	public int getColumn(int index)
-	{
-		return index % width_;
-	}
-	
-	public int getRow(int index)
-	{
-		return index / width_;
-	}
-	
-	// cells
-	
-	@Override
-	public int getNumberOfCells()
-	{
-		return cells_.length;
-	}
-
-	@Override
-	public T getCell(int index)
-	{
-		return cells_[index];
-	}
+	// rendering
 
 	@Override
 	public void renderCell(int index, int cell_size, int border)
