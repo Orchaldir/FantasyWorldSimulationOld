@@ -7,11 +7,15 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+
+import fws.utility.map.Cell;
+import fws.utility.map.SquareMap;
 
 public class WorldEditor
 {
@@ -24,6 +28,8 @@ public class WorldEditor
 	private int squareX;
 	private int squareY;
 	private int squareZ;
+	
+	private SquareMap<Cell> map_;
 
 	static
 	{
@@ -68,6 +74,18 @@ public class WorldEditor
 		squareX = 0;
 		squareY = 0;
 		squareZ = 0;
+		
+		int width = 20;
+		int height = 10;
+		
+		Cell[] cells = new Cell[width*height];
+		
+		for(int index = 0; index < cells.length; index++)
+		{
+			cells[index] = new Cell(index);
+		}
+		
+		map_ = new SquareMap<>(width, height, cells);
 	}
 
 	public void create() throws LWJGLException
