@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Random;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -16,6 +17,7 @@ import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
 import fws.world.WorldGenerationCell;
+import fws.world.ColorSelectorElevation;
 
 public class WorldEditor
 {
@@ -26,6 +28,8 @@ public class WorldEditor
 	
 	private Map<WorldGenerationCell> map_;
 	private ColorRenderer renderer_;
+	private ColorSelector cs_elevation_;
+	private ColorSelector cs_random_;
 
 	static
 	{
@@ -67,16 +71,23 @@ public class WorldEditor
 		int cell_size = 30;
 		int border = 2;
 		
+		Random random = new Random();
+		
 		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
 		for(int index = 0; index < cells.length; index++)
 		{
 			cells[index] = new WorldGenerationCell(index);
+			cells[index].setElevation(random.nextFloat());
 		}
 		
 		map_ = new SquareMap(width, height, cells);
 		//map_ = new HexMap(width, height, cells);
-		renderer_ = new ColorRenderer(map_, cell_size, border, new RandomColorSelector());
+		
+		cs_elevation_ = new ColorSelectorElevation();
+		cs_random_ = new RandomColorSelector();
+		
+		renderer_ = new ColorRenderer(map_, cell_size, border, cs_elevation_);
 	}
 
 	public void create() throws LWJGLException
@@ -117,7 +128,14 @@ public class WorldEditor
 
 	public void processKeyboard()
 	{
-		
+		if(Keyboard.isKeyDown(Keyboard.KEY_F1))
+		{
+			renderer_.setSelector(cs_elevation_);
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_F2))
+		{
+			renderer_.setSelector(cs_random_);
+		}
 	}
 
 	public void processMouse()

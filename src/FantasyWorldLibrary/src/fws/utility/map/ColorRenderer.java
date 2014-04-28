@@ -18,6 +18,11 @@ public class ColorRenderer<T extends Cell>
 		selector_ = selector;
 	}
 	
+	public void setSelector(ColorSelector<T> selector)
+	{
+		selector_ = selector;
+	}
+	
 	public void render()
 	{
 		for(int index = 0; index < map_.getNumberOfCells(); index++)
