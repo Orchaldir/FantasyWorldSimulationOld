@@ -25,13 +25,7 @@ public class HexMap<T extends Cell> extends Map<T>
 		
 		// x values
 		
-		int x0 = column * cell_width;
-		
-		if(row % 2 == 1)
-		{
-			x0 += half_width;
-		}
-		
+		int x0 = column * cell_width + (row % 2) * half_width;
 		int x1 = x0 + half_width;
 		int x2 = x0 + cell_width - border;
 		

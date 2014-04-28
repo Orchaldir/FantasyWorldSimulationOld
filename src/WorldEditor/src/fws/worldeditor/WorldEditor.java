@@ -15,6 +15,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
+import fws.world.WorldGenerationCell;
 
 public class WorldEditor
 {
@@ -23,7 +24,7 @@ public class WorldEditor
 	public static final int DISPLAY_WIDTH = 640;
 	public static final Logger LOGGER = Logger.getLogger(WorldEditor.class.getName());
 	
-	private Map<Cell> map_;
+	private Map<WorldGenerationCell> map_;
 	private ColorRenderer renderer_;
 
 	static
@@ -66,16 +67,16 @@ public class WorldEditor
 		int cell_size = 30;
 		int border = 2;
 		
-		Cell[] cells = new Cell[width*height];
+		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
 		for(int index = 0; index < cells.length; index++)
 		{
-			cells[index] = new Cell(index);
+			cells[index] = new WorldGenerationCell(index);
 		}
 		
-		//map_ = new SquareMap<>(width, height, cells);
-		map_ = new HexMap<>(width, height, cells);
-		renderer_ = new ColorRenderer(map_, cell_size, border, new RandomColorSelector<Cell>());
+		map_ = new SquareMap(width, height, cells);
+		//map_ = new HexMap(width, height, cells);
+		renderer_ = new ColorRenderer(map_, cell_size, border, new RandomColorSelector());
 	}
 
 	public void create() throws LWJGLException
