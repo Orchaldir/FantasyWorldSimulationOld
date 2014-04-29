@@ -13,6 +13,16 @@ public abstract class Map<T extends Cell>
 		cells_ = cells;
 	}
 	
+	public int getWidth()
+	{
+		return width_;
+	}
+	
+	public int getHeight()
+	{
+		return height_;
+	}
+	
 	// index
 	
 	public int getColumn(int index)
@@ -43,6 +53,11 @@ public abstract class Map<T extends Cell>
 			return null;
 		
 		return cells_[index];
+	}
+	
+	public T getCell(int column, int row)
+	{
+		return getCell(getIndex(column, row));
 	}
 	
 	abstract T getCell(float x, float y);

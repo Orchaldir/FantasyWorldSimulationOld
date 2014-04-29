@@ -16,6 +16,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
+import fws.utility.SimplexNoise;
 import fws.world.*;
 
 public class WorldEditor
@@ -32,6 +33,9 @@ public class WorldEditor
 	private ColorSelector color_random_;
 	
 	private float elevation_delta_ = 0.1f;
+	private int elevation_octaves_ = 3;
+	private float elevation_roughness_ = 0.3f;
+	private float elevation_scale_ = 0.01f;
 
 	static
 	{
@@ -68,19 +72,16 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
-		int width = 20;
-		int height = 10;
-		int cell_size = 30;
-		int border = 2;
-		
-		Random random = new Random();
+		int width = DISPLAY_WIDTH;
+		int height = DISPLAY_HEIGHT;
+		int cell_size = 1;
+		int border = 0;
 		
 		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
 		for(int index = 0; index < cells.length; index++)
 		{
 			cells[index] = new WorldGenerationCell(index);
-			cells[index].setElevation(random.nextFloat());
 		}
 		
 		map_ = new SquareMap(width, height, cells);
@@ -90,7 +91,9 @@ public class WorldEditor
 		color_land_water_ = new ColorLandAndWater();
 		color_random_ = new RandomColorSelector();
 		
-		renderer_ = new ColorRenderer(map_, cell_size, border, color_elevation_);
+		renderer_ = new ColorRenderer(map_, cell_size, border, color_land_water_);
+		
+		createElevation();
 	}
 
 	public void create() throws LWJGLException
@@ -111,6 +114,29 @@ public class WorldEditor
 		//OpenGL
 		initGL();
 		resizeGL();
+	}
+	
+	public void createElevation()
+	{
+		float frequency = 5.0f / (float) map_.getWidth();
+		Random random = new Random();
+		int offset_x = random.nextInt(map_.getWidth() * 20);
+		int offset_y = random.nextInt(map_.getHeight() * 20);
+		
+		for(int x = 0; x < map_.getWidth(); x++)
+		{
+			for(int y = 0; y < map_.getHeight(); y++)
+			{
+				WorldGenerationCell cell = map_.getCell(x, y);
+				
+				//float noise = (float)SimplexNoise.getNoise((x+offset) * frequency, y * frequency);
+				float noise = (float)SimplexNoise.getOctavedNoise(x + offset_x, y + offset_y, 
+						elevation_octaves_, elevation_roughness_, elevation_scale_);
+				float evaluation = (noise + 1.0f) / 2.0f;
+				
+				cell.setElevation(evaluation);
+			}
+		}
 	}
 
 	public void destroy()
@@ -142,6 +168,10 @@ public class WorldEditor
 		else if(Keyboard.isKeyDown(Keyboard.KEY_F3))
 		{
 			renderer_.setSelector(color_random_);
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		{
+			createElevation();
 		}
 	}
 
