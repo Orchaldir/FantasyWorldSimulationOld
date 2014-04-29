@@ -16,8 +16,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
-import fws.world.WorldGenerationCell;
-import fws.world.ColorSelectorElevation;
+import fws.world.*;
 
 public class WorldEditor
 {
@@ -28,8 +27,9 @@ public class WorldEditor
 	
 	private Map<WorldGenerationCell> map_;
 	private ColorRenderer<WorldGenerationCell> renderer_;
-	private ColorSelector cs_elevation_;
-	private ColorSelector cs_random_;
+	private ColorSelector color_elevation_;
+	private ColorSelector color_land_water_;
+	private ColorSelector color_random_;
 	
 	private float elevation_delta_ = 0.1f;
 
@@ -86,10 +86,11 @@ public class WorldEditor
 		map_ = new SquareMap(width, height, cells);
 		//map_ = new HexMap(width, height, cells);
 		
-		cs_elevation_ = new ColorSelectorElevation();
-		cs_random_ = new RandomColorSelector();
+		color_elevation_ = new ColorElevation();
+		color_land_water_ = new ColorLandAndWater();
+		color_random_ = new RandomColorSelector();
 		
-		renderer_ = new ColorRenderer(map_, cell_size, border, cs_elevation_);
+		renderer_ = new ColorRenderer(map_, cell_size, border, color_elevation_);
 	}
 
 	public void create() throws LWJGLException
@@ -132,11 +133,15 @@ public class WorldEditor
 	{
 		if(Keyboard.isKeyDown(Keyboard.KEY_F1))
 		{
-			renderer_.setSelector(cs_elevation_);
+			renderer_.setSelector(color_elevation_);
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_F2))
 		{
-			renderer_.setSelector(cs_random_);
+			renderer_.setSelector(color_land_water_);
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_F3))
+		{
+			renderer_.setSelector(color_random_);
 		}
 	}
 
