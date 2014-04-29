@@ -27,9 +27,11 @@ public class WorldEditor
 	public static final Logger LOGGER = Logger.getLogger(WorldEditor.class.getName());
 	
 	private Map<WorldGenerationCell> map_;
-	private ColorRenderer renderer_;
+	private ColorRenderer<WorldGenerationCell> renderer_;
 	private ColorSelector cs_elevation_;
 	private ColorSelector cs_random_;
+	
+	private float elevation_delta_ = 0.1f;
 
 	static
 	{
@@ -140,7 +142,24 @@ public class WorldEditor
 
 	public void processMouse()
 	{
-		
+		if(Mouse.isButtonDown(0))
+		{
+			WorldGenerationCell cell = renderer_.getCell(Mouse.getX(), Mouse.getY());
+			
+			if(cell != null)
+			{
+				cell.setElevation(cell.getElevation() + elevation_delta_);
+			}
+		}
+		else if(Mouse.isButtonDown(1))
+		{
+			WorldGenerationCell cell = renderer_.getCell(Mouse.getX(), Mouse.getY());
+			
+			if(cell != null)
+			{
+				cell.setElevation(cell.getElevation() - elevation_delta_);
+			}
+		}
 	}
 
 	public void render()

@@ -2,8 +2,8 @@ package fws.utility.map;
 
 public abstract class Map<T extends Cell>
 {
-	private final int width_;
-	private final int height_;
+	protected final int width_;
+	protected final int height_;
 	private T[] cells_;
 	
 	public Map(int width, int height, T[] cells)
@@ -25,6 +25,11 @@ public abstract class Map<T extends Cell>
 		return index / width_;
 	}
 	
+	public int getIndex(int column, int row)
+	{
+		return column + row * width_;
+	}
+	
 	// cells
 
 	public int getNumberOfCells()
@@ -34,8 +39,15 @@ public abstract class Map<T extends Cell>
 
 	public T getCell(int index)
 	{
+		if(index < 0 || index >= cells_.length)
+			return null;
+		
 		return cells_[index];
 	}
+	
+	abstract T getCell(float x, float y);
+	
+	// rendering
 	
 	abstract void renderCell(int index, int cell_size, int border);
 }

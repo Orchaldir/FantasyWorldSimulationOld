@@ -8,6 +8,19 @@ public class HexMap<T extends Cell> extends Map<T>
 	{
 		super(width, height, cells);
 	}
+	
+	// cells
+	
+	@Override
+	public T getCell(float x, float y)
+	{
+		int row = (int) (y * 2.0f / Math.sqrt(3.0f));
+		int column = (int) (x - (row % 2) * 0.5f);
+		
+		return getCell(getIndex(column, row));
+	}
+	
+	// rendering
 
 	@Override
 	void renderCell(int index, int cell_width, int border)

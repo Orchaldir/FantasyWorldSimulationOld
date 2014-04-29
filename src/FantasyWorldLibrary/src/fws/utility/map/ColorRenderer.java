@@ -23,6 +23,11 @@ public class ColorRenderer<T extends Cell>
 		selector_ = selector;
 	}
 	
+	public T getCell(int x, int y)
+	{
+		return map_.getCell(x / (float)cell_size_, y / (float)cell_size_);
+	}
+	
 	public void render()
 	{
 		for(int index = 0; index < map_.getNumberOfCells(); index++)

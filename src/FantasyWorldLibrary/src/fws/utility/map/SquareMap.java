@@ -9,6 +9,14 @@ public class SquareMap<T extends Cell> extends Map<T>
 		super(width, height, cells);
 	}
 	
+	// cells
+	
+	@Override
+	public T getCell(float x, float y)
+	{
+		return getCell(getIndex((int)x, (int)y));
+	}
+	
 	// rendering
 
 	@Override
