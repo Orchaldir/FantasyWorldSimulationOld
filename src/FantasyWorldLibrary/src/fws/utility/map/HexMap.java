@@ -4,9 +4,21 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class HexMap<T extends Cell> extends Map<T>
 {
+	public static final float CELL_WIDTH = 1.0f;
+	public static final float HALF_CELL_WIDTH = CELL_WIDTH * 0.5f;
+		
+	public static final float CELL_HEIGHT = (float) (CELL_WIDTH * 2.0f / Math.sqrt(3.0f));
+	public static final float QUARTER_CELL_HEIGHT = CELL_HEIGHT * 0.25f;
+	public static final float THREE_QUARTER_CELL_HEIGHT = CELL_HEIGHT * 0.75f;
+	
 	public HexMap(int width, int height, T[] cells)
 	{
 		super(width, height, cells);
+	}
+	
+	float getRowStart(int row)
+	{
+		return (row % 2) * HALF_CELL_WIDTH;
 	}
 	
 	// cells
@@ -14,8 +26,8 @@ public class HexMap<T extends Cell> extends Map<T>
 	@Override
 	public T getCell(float x, float y)
 	{
-		int row = (int) (y * 2.0f / Math.sqrt(3.0f));
-		int column = (int) (x - (row % 2) * 0.5f);
+		int row = (int) (y * CELL_HEIGHT);
+		int column = (int) (x * CELL_WIDTH - getRowStart(row));
 		
 		return getCell(getIndex(column, row));
 	}
@@ -23,31 +35,23 @@ public class HexMap<T extends Cell> extends Map<T>
 	// rendering
 
 	@Override
-	void renderCell(int index, int cell_width, int border)
+	void renderCell(int index)
 	{
 		int column = getColumn(index);
 		int row = getRow(index);
 		
-		// hexagon height & width
-		
-		int cell_height = (int) (cell_width * 2.0f / Math.sqrt(3.0f));
-		int quarter_height = cell_height / 4;
-		int three_quarter_height = cell_height * 3 / 4;
-		
-		int half_width = cell_width / 2;
-		
 		// x values
 		
-		int x0 = column * cell_width + (row % 2) * half_width;
-		int x1 = x0 + half_width;
-		int x2 = x0 + cell_width - border;
+		float x0 = column * CELL_WIDTH + getRowStart(row);
+		float x1 = x0 + HALF_CELL_WIDTH;
+		float x2 = x0 + CELL_WIDTH;
 		
 		// y values
 		
-		int y0 = row * three_quarter_height;
-		int y1 = y0 + quarter_height;
-		int y2 = y0 + three_quarter_height - border;
-		int y3 = y0 + cell_height - border;
+		float y0 = row * THREE_QUARTER_CELL_HEIGHT;
+		float y1 = y0 + QUARTER_CELL_HEIGHT;
+		float y2 = y0 + THREE_QUARTER_CELL_HEIGHT ;
+		float y3 = y0 + CELL_HEIGHT;
 		
 		// draw the hexagon
 		

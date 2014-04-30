@@ -32,6 +32,9 @@ public class WorldEditor
 	private ColorSelector color_land_water_;
 	private ColorSelector color_random_;
 	
+	private Random random_ = new Random(42);
+	
+	private static final int ELEVATION_SEED = 20000;
 	private float elevation_delta_ = 0.1f;
 	private int elevation_octaves_ = 3;
 	private float elevation_roughness_ = 0.3f;
@@ -72,10 +75,9 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
-		int width = DISPLAY_WIDTH;
-		int height = DISPLAY_HEIGHT;
 		int cell_size = 1;
-		int border = 0;
+		int width = DISPLAY_WIDTH / cell_size;
+		int height = DISPLAY_HEIGHT / cell_size;
 		
 		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
@@ -91,7 +93,7 @@ public class WorldEditor
 		color_land_water_ = new ColorLandAndWater();
 		color_random_ = new RandomColorSelector();
 		
-		renderer_ = new ColorRenderer(map_, cell_size, border, color_land_water_);
+		renderer_ = new ColorRenderer(map_, cell_size, color_land_water_);
 		
 		createElevation();
 	}
@@ -118,10 +120,9 @@ public class WorldEditor
 	
 	public void createElevation()
 	{
-		float frequency = 5.0f / (float) map_.getWidth();
-		Random random = new Random();
-		int offset_x = random.nextInt(map_.getWidth() * 20);
-		int offset_y = random.nextInt(map_.getHeight() * 20);
+		int cell_size = renderer_.getCellSize();
+		int offset_x = random_.nextInt(ELEVATION_SEED);
+		int offset_y = random_.nextInt(ELEVATION_SEED);
 		
 		for(int x = 0; x < map_.getWidth(); x++)
 		{
@@ -129,8 +130,11 @@ public class WorldEditor
 			{
 				WorldGenerationCell cell = map_.getCell(x, y);
 				
-				//float noise = (float)SimplexNoise.getNoise((x+offset) * frequency, y * frequency);
-				float noise = (float)SimplexNoise.getOctavedNoise(x + offset_x, y + offset_y, 
+				// position independent of cell size
+				float ax = x * cell_size + offset_x;
+				float ay = y * cell_size + offset_y;
+				
+				float noise = (float)SimplexNoise.getOctavedNoise(ax, ay, 
 						elevation_octaves_, elevation_roughness_, elevation_scale_);
 				float evaluation = (noise + 1.0f) / 2.0f;
 				
