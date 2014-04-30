@@ -24,13 +24,13 @@ public class WorldEditor
 
 	public static final int DISPLAY_HEIGHT = 480;
 	public static final int DISPLAY_WIDTH = 640;
-	public static final Logger LOGGER = Logger.getLogger(WorldEditor.class.getName());
 	
 	private Map<WorldGenerationCell> map_;
 	private ColorRenderer<WorldGenerationCell> renderer_;
 	private ColorSelector color_elevation_;
 	private ColorSelector color_land_water_;
 	private ColorSelector color_random_;
+	private ColorSelector color_temperature_;
 	
 	private Random random_ = new Random(42);
 	
@@ -38,18 +38,12 @@ public class WorldEditor
 	private float elevation_delta_ = 0.1f;
 	private int elevation_octaves_ = 3;
 	private float elevation_roughness_ = 0.3f;
-	private float elevation_scale_ = 0.01f;
-
-	static
-	{
-		try
-		{
-			LOGGER.addHandler(new FileHandler("errors.log", true));
-		} catch(IOException ex)
-		{
-			LOGGER.log(Level.WARNING, ex.toString(), ex);
-		}
-	}
+	private float elevation_scale_ = 0.005f;
+	
+	private static final int TEMPERATURE_SEED = 20000;
+	private int temperature_octaves_ = 3;
+	private float temperature_roughness_ = 0.3f;
+	private float temperature_scale_ = 0.005f;
 
 	public static void main(String[] args)
 	{
@@ -63,7 +57,7 @@ public class WorldEditor
 			main.run();
 		} catch(Exception ex)
 		{
-			LOGGER.log(Level.SEVERE, ex.toString(), ex);
+			System.out.println("Exception:" + ex.toString());
 		} finally
 		{
 			if(main != null)
@@ -75,7 +69,7 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
-		int cell_size = 1;
+		int cell_size = 10;
 		int width = DISPLAY_WIDTH / cell_size;
 		int height = DISPLAY_HEIGHT / cell_size;
 		
@@ -92,10 +86,12 @@ public class WorldEditor
 		color_elevation_ = new ColorElevation();
 		color_land_water_ = new ColorLandAndWater();
 		color_random_ = new RandomColorSelector();
+		color_temperature_ = new ColorTemperature();
 		
-		renderer_ = new ColorRenderer(map_, cell_size, color_land_water_);
+		renderer_ = new ColorRenderer(map_, cell_size, color_temperature_);
 		
 		createElevation();
+		createTemperature();
 	}
 
 	public void create() throws LWJGLException
@@ -142,6 +138,31 @@ public class WorldEditor
 			}
 		}
 	}
+	
+	public void createTemperature()
+	{
+		int cell_size = renderer_.getCellSize();
+		int offset_x = random_.nextInt(TEMPERATURE_SEED);
+		int offset_y = random_.nextInt(TEMPERATURE_SEED);
+		
+		for(int x = 0; x < map_.getWidth(); x++)
+		{
+			for(int y = 0; y < map_.getHeight(); y++)
+			{
+				WorldGenerationCell cell = map_.getCell(x, y);
+				
+				// position independent of cell size
+				float ax = x * cell_size + offset_x;
+				float ay = y * cell_size + offset_y;
+				
+				float noise = (float)SimplexNoise.getOctavedNoise(ax, ay, 
+						temperature_octaves_, temperature_roughness_, temperature_scale_);
+				float temperature = (noise + 1.0f) / 2.0f;
+				
+				cell.setTemperature(temperature);
+			}
+		}
+	}
 
 	public void destroy()
 	{
@@ -171,11 +192,19 @@ public class WorldEditor
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_F3))
 		{
+			renderer_.setSelector(color_temperature_);
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_F4))
+		{
 			renderer_.setSelector(color_random_);
 		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
 		{
 			createElevation();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_T))
+		{
+			createTemperature();
 		}
 	}
 

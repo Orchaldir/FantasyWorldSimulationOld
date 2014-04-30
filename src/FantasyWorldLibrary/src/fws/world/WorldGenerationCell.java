@@ -5,8 +5,9 @@ import fws.utility.map.Cell;
 public class WorldGenerationCell extends Cell implements WorldData
 {
 	private float elevation_ = 0.5f;
+	private float temperature_ = 0.5f;
 
-		public WorldGenerationCell(int id)
+	public WorldGenerationCell(int id)
 	{
 		super(id);
 	}
@@ -20,5 +21,16 @@ public class WorldGenerationCell extends Cell implements WorldData
 	public void setElevation(float elevation)
 	{
 		elevation_ = elevation;
+	}
+	
+	@Override
+	public float getTemperature()
+	{
+		return temperature_;
+	}
+
+	public void setTemperature(float temperature)
+	{
+		temperature_ = temperature;
 	}
 }
