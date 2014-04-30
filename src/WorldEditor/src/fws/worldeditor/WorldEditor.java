@@ -16,12 +16,11 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
-import fws.utility.SimplexNoise;
+import fws.world.generation.NoiseAlgorithm;
 import fws.world.*;
 
 public class WorldEditor
 {
-
 	public static final int DISPLAY_HEIGHT = 480;
 	public static final int DISPLAY_WIDTH = 640;
 	
@@ -32,18 +31,10 @@ public class WorldEditor
 	private ColorSelector color_random_;
 	private ColorSelector color_temperature_;
 	
-	private Random random_ = new Random(42);
-	
-	private static final int ELEVATION_SEED = 20000;
 	private float elevation_delta_ = 0.1f;
-	private int elevation_octaves_ = 3;
-	private float elevation_roughness_ = 0.3f;
-	private float elevation_scale_ = 0.005f;
 	
-	private static final int TEMPERATURE_SEED = 20000;
-	private int temperature_octaves_ = 3;
-	private float temperature_roughness_ = 0.3f;
-	private float temperature_scale_ = 0.005f;
+	private NoiseAlgorithm elevation_algo_;
+	private NoiseAlgorithm temperature_algo_;
 
 	public static void main(String[] args)
 	{
@@ -69,9 +60,9 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
-		int cell_size = 10;
-		int width = DISPLAY_WIDTH / cell_size;
-		int height = DISPLAY_HEIGHT / cell_size;
+		int cell_size = 20;
+		int width = 30;
+		int height = 20;
 		
 		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
@@ -80,8 +71,11 @@ public class WorldEditor
 			cells[index] = new WorldGenerationCell(index);
 		}
 		
-		map_ = new SquareMap(width, height, cells);
-		//map_ = new HexMap(width, height, cells);
+		//map_ = new SquareMap(width, height, cells);
+		map_ = new HexMap(width, height, cells);
+		
+		elevation_algo_   = new NoiseAlgorithm(3, 0.3f, 0.1f);
+		temperature_algo_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
 		
 		color_elevation_ = new ColorElevation();
 		color_land_water_ = new ColorLandAndWater();
@@ -116,9 +110,7 @@ public class WorldEditor
 	
 	public void createElevation()
 	{
-		int cell_size = renderer_.getCellSize();
-		int offset_x = random_.nextInt(ELEVATION_SEED);
-		int offset_y = random_.nextInt(ELEVATION_SEED);
+		elevation_algo_.update();
 		
 		for(int x = 0; x < map_.getWidth(); x++)
 		{
@@ -126,24 +118,14 @@ public class WorldEditor
 			{
 				WorldGenerationCell cell = map_.getCell(x, y);
 				
-				// position independent of cell size
-				float ax = x * cell_size + offset_x;
-				float ay = y * cell_size + offset_y;
-				
-				float noise = (float)SimplexNoise.getOctavedNoise(ax, ay, 
-						elevation_octaves_, elevation_roughness_, elevation_scale_);
-				float evaluation = (noise + 1.0f) / 2.0f;
-				
-				cell.setElevation(evaluation);
+				cell.setElevation(elevation_algo_.generate(x, y));
 			}
 		}
 	}
 	
 	public void createTemperature()
 	{
-		int cell_size = renderer_.getCellSize();
-		int offset_x = random_.nextInt(TEMPERATURE_SEED);
-		int offset_y = random_.nextInt(TEMPERATURE_SEED);
+		temperature_algo_.update();
 		
 		for(int x = 0; x < map_.getWidth(); x++)
 		{
@@ -151,15 +133,7 @@ public class WorldEditor
 			{
 				WorldGenerationCell cell = map_.getCell(x, y);
 				
-				// position independent of cell size
-				float ax = x * cell_size + offset_x;
-				float ay = y * cell_size + offset_y;
-				
-				float noise = (float)SimplexNoise.getOctavedNoise(ax, ay, 
-						temperature_octaves_, temperature_roughness_, temperature_scale_);
-				float temperature = (noise + 1.0f) / 2.0f;
-				
-				cell.setTemperature(temperature);
+				cell.setTemperature(temperature_algo_.generate(x, y));
 			}
 		}
 	}
