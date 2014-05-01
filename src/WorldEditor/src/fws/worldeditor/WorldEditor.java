@@ -35,6 +35,7 @@ public class WorldEditor
 	
 	private GenerationAlgorithm elevation_algo_;
 	private GenerationAlgorithm temperature_algo_;
+	private GenerationAlgorithm temperature_algo_linear_;
 	private GenerationAlgorithm temperature_algo_noise_;
 	private GenerationAlgorithm temperature_algo_radial_;
 
@@ -78,11 +79,12 @@ public class WorldEditor
 		//map_ = new SquareMap(width, height, cells);
 		map_ = new HexMap(width, height, cells);
 		
-		elevation_algo_   = new NoiseAlgorithm(3, 0.3f, 0.1f);
+		elevation_algo_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
 		
+		temperature_algo_linear_= new LinearGradientAlgorithm(20.0f, width, 1.0f, 0.0f);
 		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
 		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
-		temperature_algo_ = temperature_algo_radial_;
+		temperature_algo_ = temperature_algo_linear_;
 		
 		color_elevation_ = new ColorElevation();
 		color_land_water_ = new ColorLandAndWater();
@@ -195,6 +197,11 @@ public class WorldEditor
 			createTemperature();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
+		{
+			temperature_algo_ = temperature_algo_linear_;
+			createTemperature();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
 		{
 			temperature_algo_ = temperature_algo_radial_;
 			createTemperature();
