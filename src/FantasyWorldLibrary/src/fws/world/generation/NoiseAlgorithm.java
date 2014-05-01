@@ -3,7 +3,7 @@ package fws.world.generation;
 import fws.utility.SimplexNoise;
 import java.util.Random;
 
-public class NoiseAlgorithm
+public class NoiseAlgorithm implements GenerationAlgorithm
 {
 	private static final int MAX_RANDOM = 20000;
 	
@@ -31,15 +31,22 @@ public class NoiseAlgorithm
 		seed_= seed;
 	}
 	
-	public void update()
+	@Override
+	public void nextSeed()
 	{
 		seed_++;
+	}
+	
+	@Override
+	public void update()
+	{
 		random_.setSeed(seed_);
 		offset_x_ = random_.nextInt(MAX_RANDOM);
 		offset_y_ = random_.nextInt(MAX_RANDOM);
 	}
 	
-	public float generate(int x, int y)
+	@Override
+	public float generate(float x, float y)
 	{
 		float ax = x + offset_x_;
 		float ay = y + offset_y_;

@@ -16,7 +16,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
-import fws.world.generation.NoiseAlgorithm;
+import fws.world.generation.*;
 import fws.world.*;
 
 public class WorldEditor
@@ -33,8 +33,10 @@ public class WorldEditor
 	
 	private float elevation_delta_ = 0.1f;
 	
-	private NoiseAlgorithm elevation_algo_;
-	private NoiseAlgorithm temperature_algo_;
+	private GenerationAlgorithm elevation_algo_;
+	private GenerationAlgorithm temperature_algo_;
+	private GenerationAlgorithm temperature_algo_noise_;
+	private GenerationAlgorithm temperature_algo_radial_;
 
 	public static void main(String[] args)
 	{
@@ -63,6 +65,8 @@ public class WorldEditor
 		int cell_size = 20;
 		int width = 30;
 		int height = 20;
+		float hw = width / 2.0f;
+		float hh = height / 2.0f;
 		
 		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
@@ -75,7 +79,10 @@ public class WorldEditor
 		map_ = new HexMap(width, height, cells);
 		
 		elevation_algo_   = new NoiseAlgorithm(3, 0.3f, 0.1f);
-		temperature_algo_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
+		
+		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
+		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
+		temperature_algo_ = temperature_algo_radial_;
 		
 		color_elevation_ = new ColorElevation();
 		color_land_water_ = new ColorLandAndWater();
@@ -174,10 +181,22 @@ public class WorldEditor
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
 		{
+			elevation_algo_.nextSeed();
 			createElevation();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_T))
 		{
+			temperature_algo_.nextSeed();
+			createTemperature();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_1))
+		{
+			temperature_algo_ = temperature_algo_noise_;
+			createTemperature();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
+		{
+			temperature_algo_ = temperature_algo_radial_;
 			createTemperature();
 		}
 	}
