@@ -36,6 +36,12 @@ public class WorldGenerationMap
 		return map_;
 	}
 	
+	public void generate()
+	{
+		generateElevation();
+		generateTemperature();
+	}
+	
 	// elevation
 	
 	public void setElevationAlgo(GenerationAlgorithm algo)

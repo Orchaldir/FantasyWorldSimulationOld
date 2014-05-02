@@ -20,7 +20,7 @@ public class WorldGenerationCell extends Cell implements WorldData
 
 	public void setElevation(float elevation)
 	{
-		elevation_ = elevation;
+		elevation_ = Math.min(Math.max(elevation, 0.0f), 1.0f);
 	}
 	
 	@Override
@@ -31,6 +31,6 @@ public class WorldGenerationCell extends Cell implements WorldData
 
 	public void setTemperature(float temperature)
 	{
-		temperature_ = temperature;
+		temperature_ = Math.min(Math.max(temperature, 0.0f), 1.0f);
 	}
 }

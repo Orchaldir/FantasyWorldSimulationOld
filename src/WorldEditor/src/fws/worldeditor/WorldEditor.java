@@ -39,6 +39,8 @@ public class WorldEditor
 	private GenerationAlgorithm temperature_algo_linear_;
 	private GenerationAlgorithm temperature_algo_noise_;
 	private GenerationAlgorithm temperature_algo_radial_;
+	private Summation temperature_algo_sum0_;
+	private Summation temperature_algo_sum1_;
 
 	public static void main(String[] args)
 	{
@@ -77,16 +79,23 @@ public class WorldEditor
 		
 		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
 		
-		temperature_algo_elevation_ = new ModifiedByElevationAlgorithm(map_, 0.5f, 0.0f);
+		temperature_algo_elevation_ = new ModifiedByElevationAlgorithm(map_, 0.0f, -0.5f);
 		temperature_algo_linear_= new LinearGradientAlgorithm(20.0f, width, 1.0f, 0.0f);
 		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
 		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
 		
-		map_.setElevationAlgo(elevation_algo_noise_);
-		map_.setTemperatureAlgo(temperature_algo_elevation_);
+		temperature_algo_sum0_ = new Summation();
+		temperature_algo_sum0_.addAlgorithm(temperature_algo_linear_);
+		temperature_algo_sum0_.addAlgorithm(temperature_algo_elevation_);
 		
-		map_.generateElevation();
-		map_.generateTemperature();
+		temperature_algo_sum1_ = new Summation();
+		temperature_algo_sum1_.addAlgorithm(temperature_algo_radial_);
+		temperature_algo_sum1_.addAlgorithm(temperature_algo_elevation_);
+		
+		map_.setElevationAlgo(elevation_algo_noise_);
+		map_.setTemperatureAlgo(temperature_algo_sum1_);
+		
+		map_.generate();
 		
 		// renderer
 		
@@ -155,32 +164,37 @@ public class WorldEditor
 		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
 		{
 			map_.getElevationAlgo().nextSeed();
-			map_.generateElevation();
+			map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_T))
 		{
 			map_.geTemperatureAlgo().nextSeed();
-			map_.generateTemperature();
+			map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_1))
 		{
 			map_.setTemperatureAlgo(temperature_algo_noise_);
-			map_.generateTemperature();
+			map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
 		{
 			map_.setTemperatureAlgo(temperature_algo_linear_);
-			map_.generateTemperature();
+			map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
 		{
-			map_.setTemperatureAlgo(temperature_algo_radial_);
-			map_.generateTemperature();
+			map_.setTemperatureAlgo(temperature_algo_sum0_);
+			map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_4))
 		{
-			map_.setTemperatureAlgo(temperature_algo_elevation_);
-			map_.generateTemperature();
+			map_.setTemperatureAlgo(temperature_algo_radial_);
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_5))
+		{
+			map_.setTemperatureAlgo(temperature_algo_sum1_);
+			map_.generate();
 		}
 	}
 
