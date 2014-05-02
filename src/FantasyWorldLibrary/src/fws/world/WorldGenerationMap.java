@@ -8,6 +8,7 @@ public class WorldGenerationMap
 	private Map<WorldGenerationCell> map_;
 	
 	private GenerationAlgorithm elevation_algo_;
+	private GenerationAlgorithm rainfall_algo_;
 	private GenerationAlgorithm temperature_algo_;
 	
 	private float sea_level_ = 0.5f;
@@ -40,6 +41,7 @@ public class WorldGenerationMap
 	{
 		generateElevation();
 		generateTemperature();
+		generateRainfall();
 	}
 	
 	// elevation
@@ -69,6 +71,33 @@ public class WorldGenerationMap
 		}
 	}
 	
+	// rainfall
+	
+	public void setRainfallAlgo(GenerationAlgorithm algo)
+	{
+		rainfall_algo_ = algo;
+	}
+	
+	public GenerationAlgorithm getRainfallAlgo()
+	{
+		return rainfall_algo_;
+	}
+	
+	public void generateRainfall()
+	{
+		rainfall_algo_.update();
+		
+		for(int x = 0; x < map_.getWidth(); x++)
+		{
+			for(int y = 0; y < map_.getHeight(); y++)
+			{
+				WorldGenerationCell cell = map_.getCell(x, y);
+				
+				cell.setRainfall(rainfall_algo_.generate(x, y, cell));
+			}
+		}
+	}
+	
 	// temperature
 	
 	public void setTemperatureAlgo(GenerationAlgorithm algo)
@@ -76,7 +105,7 @@ public class WorldGenerationMap
 		temperature_algo_ = algo;
 	}
 	
-	public GenerationAlgorithm geTemperatureAlgo()
+	public GenerationAlgorithm getTemperatureAlgo()
 	{
 		return temperature_algo_;
 	}

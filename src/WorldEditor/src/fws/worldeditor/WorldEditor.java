@@ -3,12 +3,6 @@ package fws.worldeditor;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.*;
 
-import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Random;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -29,6 +23,7 @@ public class WorldEditor
 	private ColorRenderer<WorldGenerationCell> renderer_;
 	private ColorSelector color_elevation_;
 	private ColorSelector color_land_water_;
+	private ColorSelector color_rainfall_;
 	private ColorSelector color_random_;
 	private ColorSelector color_temperature_;
 	
@@ -41,6 +36,7 @@ public class WorldEditor
 	private GenerationAlgorithm temperature_algo_radial_;
 	private Summation temperature_algo_sum0_;
 	private Summation temperature_algo_sum1_;
+	private GenerationAlgorithm rainfall_algo_noise_;
 
 	public static void main(String[] args)
 	{
@@ -92,7 +88,10 @@ public class WorldEditor
 		temperature_algo_sum1_.addAlgorithm(temperature_algo_radial_);
 		temperature_algo_sum1_.addAlgorithm(temperature_algo_elevation_);
 		
+		rainfall_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 200);
+		
 		map_.setElevationAlgo(elevation_algo_noise_);
+		map_.setRainfallAlgo(rainfall_algo_noise_);
 		map_.setTemperatureAlgo(temperature_algo_sum1_);
 		
 		map_.generate();
@@ -101,10 +100,11 @@ public class WorldEditor
 		
 		color_elevation_ = new ColorElevation();
 		color_land_water_ = new ColorLandAndWater(map_);
+		color_rainfall_ = new ColorRainfall();
 		color_random_ = new RandomColorSelector();
 		color_temperature_ = new ColorTemperature();
 		
-		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_temperature_);
+		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_rainfall_);
 	}
 
 	public void create() throws LWJGLException
@@ -159,6 +159,10 @@ public class WorldEditor
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_F4))
 		{
+			renderer_.setSelector(color_rainfall_);
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_F5))
+		{
 			renderer_.setSelector(color_random_);
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
@@ -168,7 +172,12 @@ public class WorldEditor
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_T))
 		{
-			map_.geTemperatureAlgo().nextSeed();
+			map_.getTemperatureAlgo().nextSeed();
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_R))
+		{
+			map_.getRainfallAlgo().nextSeed();
 			map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_1))
