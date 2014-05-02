@@ -24,7 +24,8 @@ public class WorldEditor
 	public static final int DISPLAY_HEIGHT = 480;
 	public static final int DISPLAY_WIDTH = 640;
 	
-	private Map<WorldGenerationCell> map_;
+	private WorldGenerationMap map_;
+	
 	private ColorRenderer<WorldGenerationCell> renderer_;
 	private ColorSelector color_elevation_;
 	private ColorSelector color_land_water_;
@@ -33,8 +34,7 @@ public class WorldEditor
 	
 	private float elevation_delta_ = 0.1f;
 	
-	private GenerationAlgorithm elevation_algo_;
-	private GenerationAlgorithm temperature_algo_;
+	private GenerationAlgorithm elevation_algo_noise_;
 	private GenerationAlgorithm temperature_algo_linear_;
 	private GenerationAlgorithm temperature_algo_noise_;
 	private GenerationAlgorithm temperature_algo_radial_;
@@ -69,32 +69,30 @@ public class WorldEditor
 		float hw = width / 2.0f;
 		float hh = height / 2.0f;
 		
-		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
+		// map
 		
-		for(int index = 0; index < cells.length; index++)
-		{
-			cells[index] = new WorldGenerationCell(index);
-		}
+		map_ = new WorldGenerationMap(width, height);
 		
-		//map_ = new SquareMap(width, height, cells);
-		map_ = new HexMap(width, height, cells);
-		
-		elevation_algo_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
+		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
 		
 		temperature_algo_linear_= new LinearGradientAlgorithm(20.0f, width, 1.0f, 0.0f);
 		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
 		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
-		temperature_algo_ = temperature_algo_linear_;
+		
+		map_.setElevationAlgo(elevation_algo_noise_);
+		map_.setTemperatureAlgo(temperature_algo_linear_);
+		
+		map_.generateElevation();
+		map_.generateTemperature();
+		
+		// renderer
 		
 		color_elevation_ = new ColorElevation();
-		color_land_water_ = new ColorLandAndWater();
+		color_land_water_ = new ColorLandAndWater(map_);
 		color_random_ = new RandomColorSelector();
 		color_temperature_ = new ColorTemperature();
 		
-		renderer_ = new ColorRenderer(map_, cell_size, color_temperature_);
-		
-		createElevation();
-		createTemperature();
+		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_temperature_);
 	}
 
 	public void create() throws LWJGLException
@@ -115,36 +113,6 @@ public class WorldEditor
 		//OpenGL
 		initGL();
 		resizeGL();
-	}
-	
-	public void createElevation()
-	{
-		elevation_algo_.update();
-		
-		for(int x = 0; x < map_.getWidth(); x++)
-		{
-			for(int y = 0; y < map_.getHeight(); y++)
-			{
-				WorldGenerationCell cell = map_.getCell(x, y);
-				
-				cell.setElevation(elevation_algo_.generate(x, y));
-			}
-		}
-	}
-	
-	public void createTemperature()
-	{
-		temperature_algo_.update();
-		
-		for(int x = 0; x < map_.getWidth(); x++)
-		{
-			for(int y = 0; y < map_.getHeight(); y++)
-			{
-				WorldGenerationCell cell = map_.getCell(x, y);
-				
-				cell.setTemperature(temperature_algo_.generate(x, y));
-			}
-		}
 	}
 
 	public void destroy()
@@ -183,28 +151,28 @@ public class WorldEditor
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
 		{
-			elevation_algo_.nextSeed();
-			createElevation();
+			map_.getElevationAlgo().nextSeed();
+			map_.generateElevation();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_T))
 		{
-			temperature_algo_.nextSeed();
-			createTemperature();
+			map_.geTemperatureAlgo().nextSeed();
+			map_.generateTemperature();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_1))
 		{
-			temperature_algo_ = temperature_algo_noise_;
-			createTemperature();
+			map_.setTemperatureAlgo(temperature_algo_noise_);
+			map_.generateTemperature();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
 		{
-			temperature_algo_ = temperature_algo_linear_;
-			createTemperature();
+			map_.setTemperatureAlgo(temperature_algo_linear_);
+			map_.generateTemperature();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
 		{
-			temperature_algo_ = temperature_algo_radial_;
-			createTemperature();
+			map_.setTemperatureAlgo(temperature_algo_radial_);
+			map_.generateTemperature();
 		}
 	}
 
