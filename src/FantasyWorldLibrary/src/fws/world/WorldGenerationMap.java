@@ -1,7 +1,6 @@
 package fws.world;
 
-import fws.utility.map.HexMap;
-import fws.utility.map.Map;
+import fws.utility.map.*;
 import fws.world.generation.GenerationAlgorithm;
 
 public class WorldGenerationMap
@@ -13,7 +12,7 @@ public class WorldGenerationMap
 	
 	private float sea_level_ = 0.5f;
 	
-	public WorldGenerationMap(int width, int height)
+	public WorldGenerationMap(MapType type, int width, int height)
 	{
 		WorldGenerationCell[] cells = new WorldGenerationCell[width*height];
 		
@@ -22,11 +21,17 @@ public class WorldGenerationMap
 			cells[index] = new WorldGenerationCell(index);
 		}
 		
-		//map_ = new SquareMap(width, height, cells);
-		map_ = new HexMap(width, height, cells);
+		if(type == MapType.SQUARE_MAP)
+		{
+			map_ = new SquareMap(width, height, cells);
+		}
+		else if(type == MapType.HEX_MAP)
+		{
+			map_ = new HexMap(width, height, cells);
+		}
 	}
 	
-	public Map getMap()
+	public Map<WorldGenerationCell> getMap()
 	{
 		return map_;
 	}
@@ -53,7 +58,7 @@ public class WorldGenerationMap
 			{
 				WorldGenerationCell cell = map_.getCell(x, y);
 				
-				cell.setElevation(elevation_algo_.generate(x, y));
+				cell.setElevation(elevation_algo_.generate(x, y, cell));
 			}
 		}
 	}
@@ -80,7 +85,7 @@ public class WorldGenerationMap
 			{
 				WorldGenerationCell cell = map_.getCell(x, y);
 				
-				cell.setTemperature(temperature_algo_.generate(x, y));
+				cell.setTemperature(temperature_algo_.generate(x, y, cell));
 			}
 		}
 	}

@@ -29,7 +29,7 @@ public class HexMap<T extends Cell> extends Map<T>
 		int row = (int) (y * CELL_HEIGHT);
 		int column = (int) (x * CELL_WIDTH - getRowStart(row));
 		
-		return getCell(getIndex(column, row));
+		return getCell(column, row);
 	}
 	
 	// rendering

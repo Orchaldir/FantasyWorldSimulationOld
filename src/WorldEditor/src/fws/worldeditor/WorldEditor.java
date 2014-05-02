@@ -35,6 +35,7 @@ public class WorldEditor
 	private float elevation_delta_ = 0.1f;
 	
 	private GenerationAlgorithm elevation_algo_noise_;
+	private GenerationAlgorithm temperature_algo_elevation_;
 	private GenerationAlgorithm temperature_algo_linear_;
 	private GenerationAlgorithm temperature_algo_noise_;
 	private GenerationAlgorithm temperature_algo_radial_;
@@ -71,16 +72,18 @@ public class WorldEditor
 		
 		// map
 		
-		map_ = new WorldGenerationMap(width, height);
+		//map_ = new WorldGenerationMap(MapType.SQUARE_MAP, width, height);
+		map_ = new WorldGenerationMap(MapType.HEX_MAP, width, height);
 		
 		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
 		
+		temperature_algo_elevation_ = new ModifiedByElevationAlgorithm(map_, 0.5f, 0.0f);
 		temperature_algo_linear_= new LinearGradientAlgorithm(20.0f, width, 1.0f, 0.0f);
 		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
 		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
 		
 		map_.setElevationAlgo(elevation_algo_noise_);
-		map_.setTemperatureAlgo(temperature_algo_linear_);
+		map_.setTemperatureAlgo(temperature_algo_elevation_);
 		
 		map_.generateElevation();
 		map_.generateTemperature();
@@ -172,6 +175,11 @@ public class WorldEditor
 		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
 		{
 			map_.setTemperatureAlgo(temperature_algo_radial_);
+			map_.generateTemperature();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_4))
+		{
+			map_.setTemperatureAlgo(temperature_algo_elevation_);
 			map_.generateTemperature();
 		}
 	}

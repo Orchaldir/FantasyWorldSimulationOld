@@ -60,7 +60,7 @@ public abstract class Map<T extends Cell>
 		return getCell(getIndex(column, row));
 	}
 	
-	abstract T getCell(float x, float y);
+	public abstract T getCell(float x, float y);
 	
 	// rendering
 	

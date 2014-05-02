@@ -1,6 +1,8 @@
 package fws.world.generation;
 
-public class RadialGradientAlgorithm implements GenerationAlgorithm
+import fws.utility.map.Cell;
+
+public class RadialGradientAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 {
 	private float pos_x_;
 	private float pos_y_;
@@ -33,7 +35,7 @@ public class RadialGradientAlgorithm implements GenerationAlgorithm
 	}
 
 	@Override
-	public float generate(float x, float y)
+	public float generate(float x, float y, T cell)
 	{
 		float delta_x = x - pos_x_;
 		float delta_y = y - pos_y_;

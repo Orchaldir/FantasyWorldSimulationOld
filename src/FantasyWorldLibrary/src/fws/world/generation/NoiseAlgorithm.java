@@ -1,9 +1,10 @@
 package fws.world.generation;
 
 import fws.utility.SimplexNoise;
+import fws.utility.map.Cell;
 import java.util.Random;
 
-public class NoiseAlgorithm implements GenerationAlgorithm
+public class NoiseAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 {
 	private static final int MAX_RANDOM = 20000;
 	
@@ -46,7 +47,7 @@ public class NoiseAlgorithm implements GenerationAlgorithm
 	}
 	
 	@Override
-	public float generate(float x, float y)
+	public float generate(float x, float y, T cell)
 	{
 		float ax = x + offset_x_;
 		float ay = y + offset_y_;

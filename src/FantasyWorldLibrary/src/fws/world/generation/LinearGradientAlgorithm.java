@@ -1,6 +1,8 @@
 package fws.world.generation;
 
-public class LinearGradientAlgorithm implements GenerationAlgorithm
+import fws.utility.map.Cell;
+
+public class LinearGradientAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 {
 	private float degrees_;
 	private float dir_x_;
@@ -17,7 +19,6 @@ public class LinearGradientAlgorithm implements GenerationAlgorithm
 		radius_ = radius;
 		value0_ = value0;
 		value1_ = value1;
-		delta_ = value1_ - value0_;
 	}
 	
 	@Override
@@ -33,10 +34,12 @@ public class LinearGradientAlgorithm implements GenerationAlgorithm
 		
 		dir_x_ = (float)Math.sin(radians);
 		dir_y_ = (float)Math.cos(radians);
+		
+		delta_ = value1_ - value0_;
 	}
 
 	@Override
-	public float generate(float x, float y)
+	public float generate(float x, float y, T cell)
 	{
 		float distance = dir_x_ * x + dir_y_ * y;
 		float t = Math.min(Math.max(distance / radius_, 0.0f), 1.0f);
