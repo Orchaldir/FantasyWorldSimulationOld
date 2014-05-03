@@ -4,7 +4,7 @@ import fws.utility.map.Cell;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Summation<T extends Cell> implements GenerationAlgorithm<T>
+public class AddAlgorithms<T extends Cell> implements GenerationAlgorithm<T>
 {
 	private List<GenerationAlgorithm<T>> algorithms_ = new ArrayList();
 
@@ -42,11 +42,5 @@ public class Summation<T extends Cell> implements GenerationAlgorithm<T>
 		}
 		
 		return sum;
-	}
-	
-	@Override
-	public boolean useGenerate()
-	{
-		return true;
 	}
 }

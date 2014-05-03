@@ -7,5 +7,4 @@ public interface GenerationAlgorithm<T extends Cell>
 	void nextSeed();
 	void update();
 	float generate(float x, float y, T cell);
-	boolean useGenerate();
 }

@@ -56,10 +56,4 @@ public class NoiseAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 		
 		return (noise + 1.0f) / 2.0f;
 	}
-	
-	@Override
-	public boolean useGenerate()
-	{
-		return true;
-	}
 }

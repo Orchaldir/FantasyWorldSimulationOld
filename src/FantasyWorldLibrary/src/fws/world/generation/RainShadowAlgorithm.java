@@ -12,6 +12,8 @@ public class RainShadowAlgorithm<T extends Cell & WorldData> implements Generati
 	private float sea_level_;
 	private float remainder_;
 	
+	private float[][] rainfall_;
+	
 	private float min_rainfall_ = 0.2f;
 	private float min_cost_ = 0.02f;
 	private float normal_rainfall_ = 0.6f;
@@ -37,17 +39,11 @@ public class RainShadowAlgorithm<T extends Cell & WorldData> implements Generati
 		remainder_ = 1.0f - sea_level_;
 		
 		Map<WorldGenerationCell> map = map_.getMap();
-		WorldGenerationCell cell;
 		
 		int width = map.getWidth();
 		int height = map.getHeight();
 		
-		// clear rainfall
-		
-		for(int i = 0; i < map.getNumberOfCells(); i++)
-		{
-			map.getCell(i).setRainfall(0.0f);
-		}
+		rainfall_ = new float[width][height];
 		
 		// x axis
 		
@@ -123,18 +119,15 @@ public class RainShadowAlgorithm<T extends Cell & WorldData> implements Generati
 			rainfall = 0.5f;
 		}
 		
-		cell.setRainfall(Math.max(rainfall, cell.getRainfall()));
+		rainfall_[x][y] = Math.max(rainfall, rainfall_[x][y]);
 	}
 
 	@Override
 	public float generate(float x, float y, T cell)
 	{
-		return 0.0f;
-	}
-
-	@Override
-	public boolean useGenerate()
-	{
-		return false;
+		int cx = map_.getMap().getColumn(cell.getId());
+		int cy = map_.getMap().getRow(cell.getId());
+		
+		return rainfall_[cx][cy];
 	}
 }

@@ -44,10 +44,4 @@ public class ModifiedByElevationAlgorithm<T extends Cell & WorldData> implements
 		
 		return min_ + delta_ * t;
 	}
-
-	@Override
-	public boolean useGenerate()
-	{
-		return true;
-	}
 }

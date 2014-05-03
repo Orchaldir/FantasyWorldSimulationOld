@@ -30,15 +30,18 @@ public class WorldEditor
 	private float elevation_delta_ = 0.1f;
 	
 	private GenerationAlgorithm elevation_algo_noise_;
+	
 	private GenerationAlgorithm temperature_algo_elevation_;
 	private GenerationAlgorithm temperature_algo_linear_;
 	private GenerationAlgorithm temperature_algo_noise_;
 	private GenerationAlgorithm temperature_algo_radial_;
-	private Summation temperature_algo_sum0_;
-	private Summation temperature_algo_sum1_;
+	private AddAlgorithms temperature_algo_sum0_;
+	private AddAlgorithms temperature_algo_sum1_;
+	
 	private GenerationAlgorithm rainfall_algo_noise_;
 	private GenerationAlgorithm rainfall_algo_shadow_;
 	private GenerationAlgorithm rainfall_algo_sine_;
+	private MultiplyAlgorithms rainfall_algo_product_;
 
 	public static void main(String[] args)
 	{
@@ -82,20 +85,24 @@ public class WorldEditor
 		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
 		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
 		
-		temperature_algo_sum0_ = new Summation();
+		temperature_algo_sum0_ = new AddAlgorithms();
 		temperature_algo_sum0_.addAlgorithm(temperature_algo_linear_);
 		temperature_algo_sum0_.addAlgorithm(temperature_algo_elevation_);
 		
-		temperature_algo_sum1_ = new Summation();
+		temperature_algo_sum1_ = new AddAlgorithms();
 		temperature_algo_sum1_.addAlgorithm(temperature_algo_radial_);
 		temperature_algo_sum1_.addAlgorithm(temperature_algo_elevation_);
 		
 		rainfall_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 200);
 		rainfall_algo_shadow_= new RainShadowAlgorithm(map_);
-		rainfall_algo_sine_ = new Sine(20.0f, height / 3.0f, 1.0f, 0.2f, 1.0f);
+		rainfall_algo_sine_ = new SineAlgorithm(-20.0f, height / 3.0f, 1.0f, 0.2f, 1.0f);
+		
+		rainfall_algo_product_ = new MultiplyAlgorithms();
+		rainfall_algo_product_.addAlgorithm(rainfall_algo_sine_);
+		rainfall_algo_product_.addAlgorithm(rainfall_algo_shadow_);
 		
 		map_.setElevationAlgo(elevation_algo_noise_);
-		map_.setRainfallAlgo(rainfall_algo_sine_);
+		map_.setRainfallAlgo(rainfall_algo_product_);
 		map_.setTemperatureAlgo(temperature_algo_sum1_);
 		
 		map_.generate();
@@ -207,6 +214,21 @@ public class WorldEditor
 		else if(Keyboard.isKeyDown(Keyboard.KEY_5))
 		{
 			map_.setTemperatureAlgo(temperature_algo_sum1_);
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_8))
+		{
+			map_.setRainfallAlgo(rainfall_algo_product_);
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_9))
+		{
+			map_.setRainfallAlgo(rainfall_algo_sine_);
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_0))
+		{
+			map_.setRainfallAlgo(rainfall_algo_shadow_);
 			map_.generate();
 		}
 	}

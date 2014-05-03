@@ -2,7 +2,7 @@ package fws.world.generation;
 
 import fws.utility.map.Cell;
 
-public class Sine<T extends Cell> implements GenerationAlgorithm<T>
+public class SineAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 {
 	private float degrees_;
 	private float dir_x_;
@@ -15,7 +15,7 @@ public class Sine<T extends Cell> implements GenerationAlgorithm<T>
 	private float mean_;
 	private float amplitude_;
 	
-	public Sine(float degrees, float period, float offset, float min, float max)
+	public SineAlgorithm(float degrees, float period, float offset, float min, float max)
 	{
 		degrees_ = degrees;
 		factor_ = 2.0f * (float)Math.PI / period;
@@ -49,11 +49,5 @@ public class Sine<T extends Cell> implements GenerationAlgorithm<T>
 		float t = (float)Math.sin((distance - offset_) * factor_);
 		
 		return mean_ + amplitude_ * t;
-	}
-	
-	@Override
-	public boolean useGenerate()
-	{
-		return true;
 	}
 }

@@ -60,9 +60,6 @@ public class WorldGenerationMap
 	{
 		elevation_algo_.update();
 		
-		if(!elevation_algo_.useGenerate())
-			return;
-		
 		for(int x = 0; x < map_.getWidth(); x++)
 		{
 			for(int y = 0; y < map_.getHeight(); y++)
@@ -90,9 +87,6 @@ public class WorldGenerationMap
 	{
 		rainfall_algo_.update();
 		
-		if(!rainfall_algo_.useGenerate())
-			return;
-		
 		for(int x = 0; x < map_.getWidth(); x++)
 		{
 			for(int y = 0; y < map_.getHeight(); y++)
@@ -119,9 +113,6 @@ public class WorldGenerationMap
 	public void generateTemperature()
 	{
 		temperature_algo_.update();
-		
-		if(!temperature_algo_.useGenerate())
-			return;
 		
 		for(int x = 0; x < map_.getWidth(); x++)
 		{

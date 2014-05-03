@@ -46,10 +46,4 @@ public class LinearGradientAlgorithm<T extends Cell> implements GenerationAlgori
 		
 		return value0_ + delta_ * t;
 	}
-	
-	@Override
-	public boolean useGenerate()
-	{
-		return true;
-	}
 }
