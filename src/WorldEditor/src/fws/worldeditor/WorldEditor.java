@@ -38,6 +38,7 @@ public class WorldEditor
 	private Summation temperature_algo_sum1_;
 	private GenerationAlgorithm rainfall_algo_noise_;
 	private GenerationAlgorithm rainfall_algo_shadow_;
+	private GenerationAlgorithm rainfall_algo_sine_;
 
 	public static void main(String[] args)
 	{
@@ -91,9 +92,10 @@ public class WorldEditor
 		
 		rainfall_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 200);
 		rainfall_algo_shadow_= new RainShadowAlgorithm(map_);
+		rainfall_algo_sine_ = new Sine(20.0f, height / 3.0f, 1.0f, 0.2f, 1.0f);
 		
 		map_.setElevationAlgo(elevation_algo_noise_);
-		map_.setRainfallAlgo(rainfall_algo_shadow_);
+		map_.setRainfallAlgo(rainfall_algo_sine_);
 		map_.setTemperatureAlgo(temperature_algo_sum1_);
 		
 		map_.generate();

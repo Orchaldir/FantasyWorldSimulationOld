@@ -10,16 +10,16 @@ public class ModifiedByElevationAlgorithm<T extends Cell & WorldData> implements
 	private float sea_level_;
 	private float remainder_;
 	
-	private float value0_;
-	private float value1_;
+	private float min_;
+	private float max_;
 	private float delta_;
 	
-	public ModifiedByElevationAlgorithm(WorldGenerationMap map, float value0, float value1)
+	public ModifiedByElevationAlgorithm(WorldGenerationMap map, float min, float max)
 	{
 		map_ = map;
 		
-		value0_ = value0;
-		value1_ = value1;
+		min_ = min;
+		max_ = max;
 	}
 	
 	@Override
@@ -34,7 +34,7 @@ public class ModifiedByElevationAlgorithm<T extends Cell & WorldData> implements
 		sea_level_ = map_.getSeaLevel();
 		remainder_ = 1.0f - sea_level_;
 		
-		delta_ = value1_ - value0_;
+		delta_ = max_ - min_;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class ModifiedByElevationAlgorithm<T extends Cell & WorldData> implements
 	{
 		float t = Math.max((cell.getElevation() - sea_level_) / remainder_, 0.0f);
 		
-		return value0_ + delta_ * t;
+		return min_ + delta_ * t;
 	}
 
 	@Override
