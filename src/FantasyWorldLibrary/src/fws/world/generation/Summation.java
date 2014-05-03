@@ -43,4 +43,10 @@ public class Summation<T extends Cell> implements GenerationAlgorithm<T>
 		
 		return sum;
 	}
+	
+	@Override
+	public boolean useGenerate()
+	{
+		return true;
+	}
 }

@@ -2,7 +2,6 @@ package fws.world.generation;
 
 import fws.utility.map.Cell;
 import fws.world.WorldData;
-import fws.world.WorldGenerationCell;
 import fws.world.WorldGenerationMap;
 
 public class ModifiedByElevationAlgorithm<T extends Cell & WorldData> implements GenerationAlgorithm<T>
@@ -46,4 +45,9 @@ public class ModifiedByElevationAlgorithm<T extends Cell & WorldData> implements
 		return value0_ + delta_ * t;
 	}
 
+	@Override
+	public boolean useGenerate()
+	{
+		return true;
+	}
 }
