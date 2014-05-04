@@ -10,7 +10,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import fws.utility.map.*;
-import fws.world.generation.*;
+import fws.utility.state.*;
 import fws.world.*;
 
 public class WorldEditor
@@ -18,30 +18,9 @@ public class WorldEditor
 	public static final int DISPLAY_HEIGHT = 480;
 	public static final int DISPLAY_WIDTH = 640;
 	
+	private StateMgr state_mgr_;
+	
 	private WorldGenerationMap map_;
-	
-	private ColorRenderer<WorldGenerationCell> renderer_;
-	private ColorSelector color_elevation_;
-	private ColorSelector color_land_water_;
-	private ColorSelector color_rainfall_;
-	private ColorSelector color_random_;
-	private ColorSelector color_temperature_;
-	
-	private float elevation_delta_ = 0.1f;
-	
-	private GenerationAlgorithm elevation_algo_noise_;
-	
-	private GenerationAlgorithm temperature_algo_elevation_;
-	private GenerationAlgorithm temperature_algo_linear_;
-	private GenerationAlgorithm temperature_algo_noise_;
-	private GenerationAlgorithm temperature_algo_radial_;
-	private AddAlgorithms temperature_algo_sum0_;
-	private AddAlgorithms temperature_algo_sum1_;
-	
-	private GenerationAlgorithm rainfall_algo_noise_;
-	private GenerationAlgorithm rainfall_algo_shadow_;
-	private GenerationAlgorithm rainfall_algo_sine_;
-	private MultiplyAlgorithms rainfall_algo_product_;
 
 	public static void main(String[] args)
 	{
@@ -67,55 +46,26 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
+		// map
+		
 		int cell_size = 20;
 		int width = 30;
 		int height = 20;
-		float hw = width / 2.0f;
-		float hh = height / 2.0f;
-		
-		// map
 		
 		//map_ = new WorldGenerationMap(MapType.SQUARE_MAP, width, height);
 		map_ = new WorldGenerationMap(MapType.HEX_MAP, width, height);
 		
-		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
+		// states
 		
-		temperature_algo_elevation_ = new ModifiedByElevationAlgorithm(map_, 0.0f, -0.5f);
-		temperature_algo_linear_= new LinearGradientAlgorithm(20.0f, width, 1.0f, 0.0f);
-		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
-		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
+		state_mgr_ = new StateMgr();
+		state_mgr_.add(new ElevationState(map_, cell_size));
+		state_mgr_.add(new TemperatureState(map_, cell_size));
+		state_mgr_.add(new RainfallState(map_, cell_size));
+		state_mgr_.setActive("Elevation");
 		
-		temperature_algo_sum0_ = new AddAlgorithms();
-		temperature_algo_sum0_.addAlgorithm(temperature_algo_linear_);
-		temperature_algo_sum0_.addAlgorithm(temperature_algo_elevation_);
-		
-		temperature_algo_sum1_ = new AddAlgorithms();
-		temperature_algo_sum1_.addAlgorithm(temperature_algo_radial_);
-		temperature_algo_sum1_.addAlgorithm(temperature_algo_elevation_);
-		
-		rainfall_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 200);
-		rainfall_algo_shadow_= new RainShadowAlgorithm(map_);
-		rainfall_algo_sine_ = new SineAlgorithm(-20.0f, height / 3.0f, 1.0f, 0.2f, 1.0f);
-		
-		rainfall_algo_product_ = new MultiplyAlgorithms();
-		rainfall_algo_product_.addAlgorithm(rainfall_algo_sine_);
-		rainfall_algo_product_.addAlgorithm(rainfall_algo_shadow_);
-		
-		map_.setElevationAlgo(elevation_algo_noise_);
-		map_.setRainfallAlgo(rainfall_algo_product_);
-		map_.setTemperatureAlgo(temperature_algo_sum1_);
+		// generate map
 		
 		map_.generate();
-		
-		// renderer
-		
-		color_elevation_ = new ColorElevation();
-		color_land_water_ = new ColorLandAndWater(map_);
-		color_rainfall_ = new ColorRainfall();
-		color_random_ = new RandomColorSelector();
-		color_temperature_ = new ColorTemperature();
-		
-		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_rainfall_);
 	}
 
 	public void create() throws LWJGLException
@@ -158,23 +108,15 @@ public class WorldEditor
 	{
 		if(Keyboard.isKeyDown(Keyboard.KEY_F1))
 		{
-			renderer_.setSelector(color_elevation_);
+			state_mgr_.setActive("Elevation");
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_F2))
 		{
-			renderer_.setSelector(color_land_water_);
+			state_mgr_.setActive("Temperature");
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_F3))
 		{
-			renderer_.setSelector(color_temperature_);
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_F4))
-		{
-			renderer_.setSelector(color_rainfall_);
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_F5))
-		{
-			renderer_.setSelector(color_random_);
+			state_mgr_.setActive("Rainfall");
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
 		{
@@ -191,68 +133,13 @@ public class WorldEditor
 			map_.getRainfallAlgo().nextSeed();
 			map_.generate();
 		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_1))
-		{
-			map_.setTemperatureAlgo(temperature_algo_noise_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
-		{
-			map_.setTemperatureAlgo(temperature_algo_linear_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
-		{
-			map_.setTemperatureAlgo(temperature_algo_sum0_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_4))
-		{
-			map_.setTemperatureAlgo(temperature_algo_radial_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_5))
-		{
-			map_.setTemperatureAlgo(temperature_algo_sum1_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_8))
-		{
-			map_.setRainfallAlgo(rainfall_algo_product_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_9))
-		{
-			map_.setRainfallAlgo(rainfall_algo_sine_);
-			map_.generate();
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_0))
-		{
-			map_.setRainfallAlgo(rainfall_algo_shadow_);
-			map_.generate();
-		}
+		
+		state_mgr_.processKeyboard();
 	}
 
 	public void processMouse()
 	{
-		if(Mouse.isButtonDown(0))
-		{
-			WorldGenerationCell cell = renderer_.getCell(Mouse.getX(), Mouse.getY());
-			
-			if(cell != null)
-			{
-				cell.setElevation(cell.getElevation() + elevation_delta_);
-			}
-		}
-		else if(Mouse.isButtonDown(1))
-		{
-			WorldGenerationCell cell = renderer_.getCell(Mouse.getX(), Mouse.getY());
-			
-			if(cell != null)
-			{
-				cell.setElevation(cell.getElevation() - elevation_delta_);
-			}
-		}
+		state_mgr_.processMouse();
 	}
 
 	public void render()
@@ -260,7 +147,7 @@ public class WorldEditor
 		glClear(GL_COLOR_BUFFER_BIT);
 		glLoadIdentity();
 		
-		renderer_.render();
+		state_mgr_.render();
 	}
 
 	public void resizeGL()
@@ -308,7 +195,7 @@ public class WorldEditor
 
 	public void update()
 	{
-		
+		state_mgr_.update();
 	}
 
 }
