@@ -2,6 +2,7 @@ package fws.worldeditor;
 
 import fws.utility.map.*;
 import fws.utility.state.State;
+import fws.utility.Color;
 import fws.world.*;
 import fws.world.generation.NoiseAlgorithm;
 import org.lwjgl.input.Keyboard;
@@ -19,7 +20,7 @@ public class ElevationState extends State
 	private PlateType water_type_;
 	
 	private ColorRenderer<PlateTectonicsCell> tectonics_renderer_;
-	private RandomColorSelector color_tectonics_;
+	private ColorPlateTectonics color_tectonics_;
 	
 	// elevation
 	
@@ -38,12 +39,14 @@ public class ElevationState extends State
 		int width = 12;
 		int height = 6;
 		
-		land_type_ = new PlateType("Land", 0.75f);
-		water_type_ = new PlateType("Water", 0.25f);
+		land_type_ = new PlateType("Land", 0.75f, new Color(0.0f, 1.0f, 0.0f));
+		water_type_ = new PlateType("Water", 0.25f, new Color(0.0f, 0.0f, 1.0f));
 		
 		tectonics_map_ = new PlateTectonicsMap(width, height, water_type_);
 		
-		color_tectonics_ = new RandomColorSelector();
+		tectonics_map_.getMap().getCell(4, 2).type_ = land_type_;
+		
+		color_tectonics_ = new ColorPlateTectonics();
 		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tectonics_cell_size, color_tectonics_);
 		
 		// elevation
