@@ -1,16 +1,30 @@
 package fws.worldeditor;
 
-import fws.utility.map.ColorRenderer;
+import fws.utility.map.*;
 import fws.utility.state.State;
 import fws.world.*;
 import fws.world.generation.NoiseAlgorithm;
+import org.lwjgl.input.Keyboard;
 
 public class ElevationState extends State
 {
-	WorldGenerationMap map_;
+	private WorldGenerationMap map_;
 	
-	private ColorRenderer<WorldGenerationCell> renderer_;
-	private ColorLandAndWater color_land_water_;
+	private ColorRenderer renderer_;
+	
+	// plate tectonics
+	
+	private PlateTectonicsMap tectonics_map_;
+	private PlateType land_type_;
+	private PlateType water_type_;
+	
+	private ColorRenderer<PlateTectonicsCell> tectonics_renderer_;
+	private RandomColorSelector color_tectonics_;
+	
+	// elevation
+	
+	private ColorRenderer<WorldGenerationCell> elevation_renderer_;
+	private ColorLandAndWater color_elevation_;
 	
 	private NoiseAlgorithm elevation_algo_noise_;
 	
@@ -18,21 +32,48 @@ public class ElevationState extends State
 	{
 		map_ = map;
 		
-		// generation
+		// plate tectonics
+		
+		int tectonics_cell_size = 50;
+		int width = 12;
+		int height = 6;
+		
+		land_type_ = new PlateType("Land", 0.75f);
+		water_type_ = new PlateType("Water", 0.25f);
+		
+		tectonics_map_ = new PlateTectonicsMap(width, height, water_type_);
+		
+		color_tectonics_ = new RandomColorSelector();
+		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tectonics_cell_size, color_tectonics_);
+		
+		// elevation
 		
 		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
 		map_.setElevationAlgo(elevation_algo_noise_);
 		
-		// rendering
+		color_elevation_ = new ColorLandAndWater(map_);
+		elevation_renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_elevation_);
 		
-		color_land_water_ = new ColorLandAndWater(map_);
-		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_land_water_);
+		renderer_ = tectonics_renderer_;
 	}
 	
 	@Override
 	public String getName()
 	{
 		return "Elevation";
+	}
+	
+	@Override
+	public void processKeyboard()
+	{
+		if(Keyboard.isKeyDown(Keyboard.KEY_1))
+		{
+			renderer_ = tectonics_renderer_;
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
+		{
+			renderer_ = elevation_renderer_;
+		}
 	}
 	
 	@Override

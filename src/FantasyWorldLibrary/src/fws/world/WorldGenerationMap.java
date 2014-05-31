@@ -134,6 +134,6 @@ public class WorldGenerationMap
 	
 	public void setSeaLevel(float sea_level)
 	{
-		sea_level_ = sea_level;
+		sea_level_ = Math.min(Math.max(sea_level, 0.0f), 1.0f);
 	}
 }
