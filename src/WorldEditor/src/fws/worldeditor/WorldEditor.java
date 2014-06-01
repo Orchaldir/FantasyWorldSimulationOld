@@ -48,9 +48,9 @@ public class WorldEditor
 	{
 		// map
 		
-		int cell_size = 20;
-		int width = 30;
-		int height = 20;
+		int cell_size = 10;
+		int width = 60;
+		int height = 40;
 		
 		//map_ = new WorldGenerationMap(MapType.SQUARE_MAP, width, height);
 		map_ = new WorldGenerationMap(MapType.HEX_MAP, width, height);

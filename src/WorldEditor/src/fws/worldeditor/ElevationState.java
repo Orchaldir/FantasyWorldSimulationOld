@@ -4,7 +4,7 @@ import fws.utility.map.*;
 import fws.utility.state.State;
 import fws.utility.Color;
 import fws.world.*;
-import fws.world.generation.NoiseAlgorithm;
+import fws.world.generation.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -28,6 +28,7 @@ public class ElevationState extends State
 	private ColorRenderer<WorldGenerationCell> elevation_renderer_;
 	private ColorLandAndWater color_elevation_;
 	
+	private PlateTectonicsAlgorithm elevation_algo_tectonics_;
 	private NoiseAlgorithm elevation_algo_noise_;
 	
 	public ElevationState(WorldGenerationMap map, int cell_size)
@@ -36,25 +37,27 @@ public class ElevationState extends State
 		
 		// plate tectonics
 		
-		float tectonics_cell_size = 50;
-		float tectonics_cell_border = 1;
-		int width = 12;
-		int height = 6;
+		float tec_render_size = 50.0f;
+		float tec_render_border = 1.0f;
+		int tec_width = 12;
+		int tec_height = 8;
+		int tec_cell_size = 5;
 		
 		land_type_ = new PlateType("Land", 0.75f, new Color(0.0f, 1.0f, 0.0f));
 		water_type_ = new PlateType("Water", 0.25f, new Color(0.0f, 0.0f, 1.0f));
 		
-		tectonics_map_ = new PlateTectonicsMap(width, height, water_type_);
+		tectonics_map_ = new PlateTectonicsMap(tec_width, tec_height, tec_cell_size, water_type_);
 		
 		tectonics_map_.getMap().getCell(4, 2).type_ = land_type_;
 		
 		color_tectonics_ = new ColorPlateTectonics();
-		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tectonics_cell_size, tectonics_cell_border, color_tectonics_);
+		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tec_render_size, tec_render_border, color_tectonics_);
 		
 		// elevation
 		
-		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f);
-		map_.setElevationAlgo(elevation_algo_noise_);
+		elevation_algo_tectonics_ = new PlateTectonicsAlgorithm(tectonics_map_);
+		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.05f);
+		map_.setElevationAlgo(elevation_algo_tectonics_);
 		
 		color_elevation_ = new ColorLandAndWater(map_);
 		elevation_renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_elevation_);
@@ -78,6 +81,14 @@ public class ElevationState extends State
 		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
 		{
 			renderer_ = elevation_renderer_;
+			map_.setElevationAlgo(elevation_algo_tectonics_);
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
+		{
+			renderer_ = elevation_renderer_;
+			map_.setElevationAlgo(elevation_algo_noise_);
+			map_.generate();
 		}
 	}
 	
@@ -103,6 +114,7 @@ public class ElevationState extends State
 		if(cell != null)
 		{
 			cell.type_ = type;
+			map_.generate();
 		}
 	}
 	
