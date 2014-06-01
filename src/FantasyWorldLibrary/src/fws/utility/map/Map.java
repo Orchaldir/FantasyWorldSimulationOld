@@ -37,6 +37,9 @@ public abstract class Map<T extends Cell>
 	
 	public int getIndex(int column, int row)
 	{
+		if(column < 0 || column >= width_ || row < 0 || row >= height_)
+			return -1;
+		
 		return column + row * width_;
 	}
 	
