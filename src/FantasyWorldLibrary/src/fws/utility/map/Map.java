@@ -64,5 +64,6 @@ public abstract class Map<T extends Cell>
 	
 	// rendering
 	
+	abstract void prepareRendering(float cell_border);
 	abstract void renderCell(int index);
 }

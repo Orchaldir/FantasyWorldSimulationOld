@@ -35,7 +35,8 @@ public class ElevationState extends State
 		
 		// plate tectonics
 		
-		int tectonics_cell_size = 50;
+		float tectonics_cell_size = 50;
+		float tectonics_cell_border = 1;
 		int width = 12;
 		int height = 6;
 		
@@ -47,7 +48,7 @@ public class ElevationState extends State
 		tectonics_map_.getMap().getCell(4, 2).type_ = land_type_;
 		
 		color_tectonics_ = new ColorPlateTectonics();
-		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tectonics_cell_size, color_tectonics_);
+		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tectonics_cell_size, tectonics_cell_border, color_tectonics_);
 		
 		// elevation
 		

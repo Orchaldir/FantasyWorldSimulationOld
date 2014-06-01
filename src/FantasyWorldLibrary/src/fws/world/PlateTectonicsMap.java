@@ -4,7 +4,7 @@ import fws.utility.map.*;
 
 public class PlateTectonicsMap
 {
-	private SquareMap<PlateTectonicsCell> map_;
+	private Map<PlateTectonicsCell> map_;
 	
 	public PlateTectonicsMap(int width, int height, PlateType type)
 	{
@@ -18,7 +18,7 @@ public class PlateTectonicsMap
 		map_ = new SquareMap(width, height, cells);
 	}
 	
-	public SquareMap<PlateTectonicsCell> getMap()
+	public Map<PlateTectonicsCell> getMap()
 	{
 		return map_;
 	}

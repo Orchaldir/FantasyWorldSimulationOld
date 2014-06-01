@@ -5,11 +5,15 @@ import static org.lwjgl.opengl.GL11.*;
 public class HexMap<T extends Cell> extends Map<T>
 {
 	public static final float CELL_WIDTH = 1.0f;
-	public static final float HALF_CELL_WIDTH = CELL_WIDTH * 0.5f;
-		
+	public static final float CELL_WIDTH_1_2 = CELL_WIDTH * 0.5f;
+	
 	public static final float CELL_HEIGHT = (float) (CELL_WIDTH * 2.0f / Math.sqrt(3.0f));
-	public static final float QUARTER_CELL_HEIGHT = CELL_HEIGHT * 0.25f;
-	public static final float THREE_QUARTER_CELL_HEIGHT = CELL_HEIGHT * 0.75f;
+	public static final float CELL_HEIGHT_1_4 = CELL_HEIGHT * 0.25f;
+	public static final float CELL_HEIGHT_3_4 = CELL_HEIGHT * 0.75f;
+	
+	private float cell_width_border_;
+	private float cell_height_border_;
+	private float cell_height_3_4_border_;
 	
 	public HexMap(int width, int height, T[] cells)
 	{
@@ -18,7 +22,7 @@ public class HexMap<T extends Cell> extends Map<T>
 	
 	float getRowStart(int row)
 	{
-		return (row % 2) * HALF_CELL_WIDTH;
+		return (row % 2) * CELL_WIDTH_1_2;
 	}
 	
 	// cells
@@ -33,6 +37,14 @@ public class HexMap<T extends Cell> extends Map<T>
 	}
 	
 	// rendering
+	
+	@Override
+	void prepareRendering(float cell_border)
+	{
+		cell_width_border_ = CELL_WIDTH - cell_border;
+		cell_height_border_ = CELL_HEIGHT - cell_border;
+		cell_height_3_4_border_ = CELL_HEIGHT_3_4 - cell_border;
+	}
 
 	@Override
 	void renderCell(int index)
@@ -43,15 +55,15 @@ public class HexMap<T extends Cell> extends Map<T>
 		// x values
 		
 		float x0 = column * CELL_WIDTH + getRowStart(row);
-		float x1 = x0 + HALF_CELL_WIDTH;
-		float x2 = x0 + CELL_WIDTH;
+		float x1 = x0 + CELL_WIDTH_1_2;
+		float x2 = x0 + cell_width_border_;
 		
 		// y values
 		
-		float y0 = row * THREE_QUARTER_CELL_HEIGHT;
-		float y1 = y0 + QUARTER_CELL_HEIGHT;
-		float y2 = y0 + THREE_QUARTER_CELL_HEIGHT ;
-		float y3 = y0 + CELL_HEIGHT;
+		float y0 = row * CELL_HEIGHT_3_4;
+		float y1 = y0 + CELL_HEIGHT_1_4;
+		float y2 = y0 + cell_height_3_4_border_;
+		float y3 = y0 + cell_height_border_;
 		
 		// draw the hexagon
 		
