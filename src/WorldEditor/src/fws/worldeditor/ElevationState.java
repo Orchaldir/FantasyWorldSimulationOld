@@ -31,36 +31,32 @@ public class ElevationState extends State
 	private PlateTectonicsAlgorithm elevation_algo_tectonics_;
 	private NoiseAlgorithm elevation_algo_noise_;
 	
-	public ElevationState(WorldGenerationMap map, int cell_size)
+	public ElevationState(WorldEditor editor)
 	{
-		map_ = map;
+		tectonics_map_ = editor.getPlateTectonicsMap();
+		map_ = editor.getWorldGenerationMap();
 		
 		// plate tectonics
 		
-		float tec_render_size = 50.0f;
+		float tec_render_size = editor.getTectonicsRenderSize();
 		float tec_render_border = 1.0f;
-		int tec_width = 12;
-		int tec_height = 8;
-		int tec_cell_size = 5;
 		
-		land_type_ = new PlateType("Land", 0.75f, new Color(0.0f, 1.0f, 0.0f));
-		water_type_ = new PlateType("Water", 0.25f, new Color(0.0f, 0.0f, 1.0f));
-		
-		tectonics_map_ = new PlateTectonicsMap(tec_width, tec_height, tec_cell_size, water_type_);
-		
-		tectonics_map_.getMap().getCell(4, 2).type_ = land_type_;
+		land_type_ = editor.getLandType();
+		water_type_ = editor.getWaterType();
 		
 		color_tectonics_ = new ColorPlateTectonics();
 		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tec_render_size, tec_render_border, color_tectonics_);
 		
 		// elevation
 		
+		float world_render_size = editor.getWorldRenderSize();
+		
 		elevation_algo_tectonics_ = new PlateTectonicsAlgorithm(tectonics_map_);
-		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.05f);
+		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.25f / tectonics_map_.getCellSize());
 		map_.setElevationAlgo(elevation_algo_tectonics_);
 		
 		color_elevation_ = new ColorLandAndWater(map_);
-		elevation_renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_elevation_);
+		elevation_renderer_ = new ColorRenderer(map_.getMap(), world_render_size, color_elevation_);
 		
 		renderer_ = tectonics_renderer_;
 	}

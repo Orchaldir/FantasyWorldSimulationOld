@@ -18,9 +18,9 @@ public class RainfallState extends State
 	private SineAlgorithm rainfall_algo_sine_;
 	private MultiplyAlgorithms rainfall_algo_product_;
 	
-	public RainfallState(WorldGenerationMap map, int cell_size)
+	public RainfallState(WorldEditor editor)
 	{
-		map_ = map;
+		map_ = editor.getWorldGenerationMap();
 		
 		int width = map_.getMap().getWidth();
 		int height = map_.getMap().getHeight();
@@ -40,7 +40,7 @@ public class RainfallState extends State
 		// rendering
 		
 		color_rainfall_ = new ColorRainfall();
-		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_rainfall_);
+		renderer_ = new ColorRenderer(map_.getMap(), editor.getWorldRenderSize(), color_rainfall_);
 	}
 	
 	@Override

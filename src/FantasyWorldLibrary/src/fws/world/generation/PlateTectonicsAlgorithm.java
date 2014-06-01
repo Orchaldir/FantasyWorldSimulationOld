@@ -93,14 +93,46 @@ public class PlateTectonicsAlgorithm<T extends Cell & WorldData> implements Gene
 			value11 = tectonics_map_.getElevation(cell_x+1, cell_y+1);
 		}
 		
-		// bilinear interpolation
+		// interpolation
 		
-		float value0 = value00 * (1.0f - factor_x) + value10 * factor_x;
-		float value1 = value01 * (1.0f - factor_x) + value11 * factor_x;
+		return interpolateBilinear(value00, value10, value01, value11, factor_x, factor_y);
+	}
+	
+	public float interpolateBilinear(float v00, float v10, float v01, float v11, float x, float y)
+	{
+		float value0 = v00 * (1.0f - x) + v10 * x;
+		float value1 = v01 * (1.0f - x) + v11 * x;
 		
-		float value = value0 * (1.0f - factor_y) + value1 * factor_y;
+		return value0 * (1.0f - y) + value1 * y;
+	}
+	
+	public float interpolateWithDistance(float v00, float v10, float v01, float v11, float x, float y)
+	{
+		float rest_x = 1.0f - x;
+		float rest_y = 1.0f - y;
 		
-		return value;
+		float x_2 = x * x;
+		float y_2 = y * y;
+		float rest_x_2 = rest_x * rest_x;
+		float rest_y_2 = rest_y * rest_y;
+		
+		// distances
+		
+		float distance00 = (float)Math.sqrt(x_2 + y_2);
+		float distance10 = (float)Math.sqrt(rest_x_2 + y_2);
+		float distance01 = (float)Math.sqrt(x_2 + rest_y_2);
+		float distance11 = (float)Math.sqrt(rest_x_2 + rest_y_2);
+		
+		// weights
+		
+		float w00 = Math.max(1.0f - distance00, 0.0f);
+		float w10 = Math.max(1.0f - distance10, 0.0f);
+		float w01 = Math.max(1.0f - distance01, 0.0f);
+		float w11 = Math.max(1.0f - distance11, 0.0f);
+		
+		float total_weight = w00 + w10 + w01 + w11;
+		
+		return (w00 * v00 + w10 * v10 + w01 * v01 + w11 * v11) / total_weight;
 	}
 
 }

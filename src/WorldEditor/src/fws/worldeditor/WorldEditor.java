@@ -1,5 +1,6 @@
 package fws.worldeditor;
 
+import fws.utility.Color;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.*;
 
@@ -20,7 +21,13 @@ public class WorldEditor
 	
 	private StateMgr state_mgr_;
 	
-	private WorldGenerationMap map_;
+	private PlateTectonicsMap tectonics_map_;
+	private float tectonics_render_size_;
+	private PlateType land_type_;
+	private PlateType water_type_;
+	
+	private WorldGenerationMap world_map_;
+	private float world_render_size_;
 
 	public static void main(String[] args)
 	{
@@ -46,26 +53,65 @@ public class WorldEditor
 
 	public WorldEditor()
 	{
-		// map
+		// plate tectonics
 		
-		int cell_size = 10;
-		int width = 60;
-		int height = 40;
+		int tec_width = 12;
+		int tec_height = 8;
+		int tec_cell_size = 50;
+		tectonics_render_size_ = 600.0f / tec_width;
 		
-		//map_ = new WorldGenerationMap(MapType.SQUARE_MAP, width, height);
-		map_ = new WorldGenerationMap(MapType.HEX_MAP, width, height);
+		land_type_ = new PlateType("Land", 0.75f, new Color(0.0f, 1.0f, 0.0f));
+		water_type_ = new PlateType("Water", 0.25f, new Color(0.0f, 0.0f, 1.0f));
+		
+		tectonics_map_ = new PlateTectonicsMap(tec_width, tec_height, tec_cell_size, water_type_);
+
+		// world map
+		
+		world_render_size_ = tectonics_render_size_ / tec_cell_size;
+		
+		world_map_ = tectonics_map_.createWorldGenerationMap(MapType.SQUARE_MAP);
 		
 		// states
 		
 		state_mgr_ = new StateMgr();
-		state_mgr_.add(new ElevationState(map_, cell_size));
-		state_mgr_.add(new TemperatureState(map_, cell_size));
-		state_mgr_.add(new RainfallState(map_, cell_size));
+		state_mgr_.add(new ElevationState(this));
+		state_mgr_.add(new TemperatureState(this));
+		state_mgr_.add(new RainfallState(this));
 		state_mgr_.setActive("Elevation");
 		
 		// generate map
 		
-		map_.generate();
+		world_map_.generate();
+	}
+	
+	public PlateTectonicsMap getPlateTectonicsMap()
+	{
+		return tectonics_map_;
+	}
+
+	public float getTectonicsRenderSize()
+	{
+		return tectonics_render_size_;
+	}
+	
+	public PlateType getLandType()
+	{
+		return land_type_;
+	}
+	
+	public PlateType getWaterType()
+	{
+		return water_type_;
+	}
+	
+	public WorldGenerationMap getWorldGenerationMap()
+	{
+		return world_map_;
+	}
+	
+	public float getWorldRenderSize()
+	{
+		return world_render_size_;
 	}
 
 	public void create() throws LWJGLException
@@ -120,18 +166,18 @@ public class WorldEditor
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_E))
 		{
-			map_.getElevationAlgo().nextSeed();
-			map_.generate();
+			world_map_.getElevationAlgo().nextSeed();
+			world_map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_T))
 		{
-			map_.getTemperatureAlgo().nextSeed();
-			map_.generate();
+			world_map_.getTemperatureAlgo().nextSeed();
+			world_map_.generate();
 		}
 		else if(Keyboard.isKeyDown(Keyboard.KEY_R))
 		{
-			map_.getRainfallAlgo().nextSeed();
-			map_.generate();
+			world_map_.getRainfallAlgo().nextSeed();
+			world_map_.generate();
 		}
 		
 		state_mgr_.processKeyboard();

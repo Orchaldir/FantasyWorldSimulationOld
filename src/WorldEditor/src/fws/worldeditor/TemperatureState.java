@@ -20,9 +20,9 @@ public class TemperatureState extends State
 	private AddAlgorithms temperature_algo_sum0_;
 	private AddAlgorithms temperature_algo_sum1_;
 	
-	public TemperatureState(WorldGenerationMap map, int cell_size)
+	public TemperatureState(WorldEditor editor)
 	{
-		map_ = map;
+		map_ = editor.getWorldGenerationMap();
 		
 		int width = map_.getMap().getWidth();
 		int height = map_.getMap().getHeight();
@@ -49,7 +49,7 @@ public class TemperatureState extends State
 		// rendering
 		
 		color_temperature_ = new ColorTemperature();
-		renderer_ = new ColorRenderer(map_.getMap(), cell_size, color_temperature_);
+		renderer_ = new ColorRenderer(map_.getMap(), editor.getWorldRenderSize(), color_temperature_);
 	}
 	
 	@Override

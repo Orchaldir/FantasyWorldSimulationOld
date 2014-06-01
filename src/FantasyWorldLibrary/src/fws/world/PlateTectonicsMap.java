@@ -46,4 +46,12 @@ public class PlateTectonicsMap
 	{
 		return getType(x, y).getElevation();
 	}
+	
+	public WorldGenerationMap createWorldGenerationMap(MapType type)
+	{
+		int width = map_.getWidth() * cell_size_;
+		int height = map_.getHeight() * cell_size_;
+		
+		return new WorldGenerationMap(type, width, height);
+	}
 }
