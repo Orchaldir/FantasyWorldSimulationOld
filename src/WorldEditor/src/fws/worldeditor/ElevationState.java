@@ -6,6 +6,7 @@ import fws.utility.Color;
 import fws.world.*;
 import fws.world.generation.NoiseAlgorithm;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 public class ElevationState extends State
 {
@@ -77,6 +78,31 @@ public class ElevationState extends State
 		else if(Keyboard.isKeyDown(Keyboard.KEY_2))
 		{
 			renderer_ = elevation_renderer_;
+		}
+	}
+	
+	@Override
+	public  void processMouse()
+	{
+		if(Mouse.isButtonDown(0)) // left button
+		{
+			processClick(land_type_);
+		}
+		else if(Mouse.isButtonDown(1)) // right button
+		{
+			processClick(water_type_);
+		}
+	}
+	
+	public void processClick(PlateType type)
+	{
+		int x = Mouse.getX();
+		int y = Mouse.getY();
+		PlateTectonicsCell cell = tectonics_renderer_.getCell(x, y);
+		
+		if(cell != null)
+		{
+			cell.type_ = type;
 		}
 	}
 	
