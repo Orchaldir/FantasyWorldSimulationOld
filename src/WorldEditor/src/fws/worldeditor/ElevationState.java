@@ -50,9 +50,10 @@ public class ElevationState extends State
 		// elevation
 		
 		float world_render_size = editor.getWorldRenderSize();
+		float noise_scale = 0.25f / tectonics_map_.getCellSize();
 		
 		elevation_algo_tectonics_ = new PlateTectonicsAlgorithm(tectonics_map_);
-		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.25f / tectonics_map_.getCellSize());
+		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, noise_scale);
 		map_.setElevationAlgo(elevation_algo_tectonics_);
 		
 		color_elevation_ = new ColorLandAndWater(map_);

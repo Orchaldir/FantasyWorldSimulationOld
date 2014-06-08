@@ -27,8 +27,10 @@ public class RainfallState extends State
 		
 		// generation
 		
+		int distance = editor.getPlateTectonicsMap().getCellSize();
+		
 		rainfall_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 200);
-		rainfall_algo_shadow_= new RainShadowAlgorithm(map_);
+		rainfall_algo_shadow_ = new RainShadowAlgorithm(map_, 0.2f, distance * 2, distance);
 		rainfall_algo_sine_ = new SineAlgorithm(-20.0f, height / 3.0f, 1.0f, 0.2f, 1.0f);
 		
 		rainfall_algo_product_ = new MultiplyAlgorithms();

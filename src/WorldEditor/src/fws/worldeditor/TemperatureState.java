@@ -29,11 +29,13 @@ public class TemperatureState extends State
 		float hw = width / 2.0f;
 		float hh = height / 2.0f;
 		
+		float noise_scale = 0.25f / editor.getPlateTectonicsMap().getCellSize();
+		
 		// generation
 		
 		temperature_algo_elevation_ = new ModifiedByElevationAlgorithm(map_, 0.0f, -0.5f);
 		temperature_algo_linear_= new LinearGradientAlgorithm(20.0f, width, 1.0f, 0.0f);
-		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, 0.1f, 100);
+		temperature_algo_noise_ = new NoiseAlgorithm(3, 0.3f, noise_scale, 100);
 		temperature_algo_radial_ = new RadialGradientAlgorithm(hw, hh, hw, 0.0f, 1.0f);
 		
 		temperature_algo_sum0_ = new AddAlgorithms();
