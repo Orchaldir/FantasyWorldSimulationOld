@@ -30,6 +30,9 @@ public class ElevationState extends State
 	
 	private PlateTectonicsAlgorithm elevation_algo_tectonics_;
 	private NoiseAlgorithm elevation_algo_noise_;
+	private AddAlgorithms elevation_algo_sum_;
+	
+	private NoiseAlgorithm elevation_algo_noise_2_;
 	
 	public ElevationState(WorldEditor editor)
 	{
@@ -53,7 +56,14 @@ public class ElevationState extends State
 		float noise_scale = 0.25f / tectonics_map_.getCellSize();
 		
 		elevation_algo_tectonics_ = new PlateTectonicsAlgorithm(tectonics_map_);
-		elevation_algo_noise_ = new NoiseAlgorithm(3, 0.3f, noise_scale);
+		elevation_algo_noise_ = new NoiseAlgorithm(4, 0.3f, noise_scale*3.0f, 0.0f, 0.2f);
+		
+		elevation_algo_sum_ = new AddAlgorithms();
+		elevation_algo_sum_.addAlgorithm(elevation_algo_tectonics_);
+		elevation_algo_sum_.addAlgorithm(elevation_algo_noise_);
+		
+		elevation_algo_noise_2_ = new NoiseAlgorithm(3, 0.3f, noise_scale);
+		
 		map_.setElevationAlgo(elevation_algo_tectonics_);
 		
 		color_elevation_ = new ColorLandAndWater(map_);
@@ -84,7 +94,13 @@ public class ElevationState extends State
 		else if(Keyboard.isKeyDown(Keyboard.KEY_3))
 		{
 			renderer_ = elevation_renderer_;
-			map_.setElevationAlgo(elevation_algo_noise_);
+			map_.setElevationAlgo(elevation_algo_sum_);
+			map_.generate();
+		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_4))
+		{
+			renderer_ = elevation_renderer_;
+			map_.setElevationAlgo(elevation_algo_noise_2_);
 			map_.generate();
 		}
 	}

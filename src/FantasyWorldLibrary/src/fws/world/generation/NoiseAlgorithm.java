@@ -18,11 +18,23 @@ public class NoiseAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 	private int offset_x_;
 	private int offset_y_;
 	
+	private float mean_ = 0.5f;
+	private float amplitude_ = 0.5f;
+	
 	public NoiseAlgorithm(int octaves, float roughness, float scale)
 	{
 		octaves_ = octaves;
 		roughness_ = roughness;
 		scale_ = scale;
+	}
+	
+	public NoiseAlgorithm(int octaves, float roughness, float scale, float mean, float amplitude)
+	{
+		octaves_ = octaves;
+		roughness_ = roughness;
+		scale_ = scale;
+		mean_ = mean;
+		amplitude_ = amplitude;
 	}
 	
 	public NoiseAlgorithm(int octaves, float roughness, float scale, int seed)
@@ -54,6 +66,6 @@ public class NoiseAlgorithm<T extends Cell> implements GenerationAlgorithm<T>
 				
 		float noise = (float)SimplexNoise.getOctavedNoise(ax, ay, octaves_, roughness_, scale_);
 		
-		return (noise + 1.0f) / 2.0f;
+		return mean_ + noise * amplitude_;
 	}
 }

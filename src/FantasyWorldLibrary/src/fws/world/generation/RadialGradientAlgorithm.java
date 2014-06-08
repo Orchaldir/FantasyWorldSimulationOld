@@ -19,7 +19,6 @@ public class RadialGradientAlgorithm<T extends Cell> implements GenerationAlgori
 		radius_ = radius;
 		value0_ = value0;
 		value1_ = value1;
-		delta_ = value1_ - value0_;
 	}
 	
 	@Override
@@ -31,7 +30,7 @@ public class RadialGradientAlgorithm<T extends Cell> implements GenerationAlgori
 	@Override
 	public void update()
 	{
-		
+		delta_ = value1_ - value0_;
 	}
 
 	@Override
