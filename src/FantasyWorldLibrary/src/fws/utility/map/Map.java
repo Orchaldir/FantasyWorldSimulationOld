@@ -65,6 +65,28 @@ public abstract class Map<T extends Cell>
 	
 	public abstract T getCell(float x, float y);
 	
+	// neighbors
+	
+	public abstract int getNumberOfNeighbors();
+	
+	public T getNeighbor(T cell, int dir)
+	{
+		return getNeighbor(cell.getId(), dir);
+	}
+	
+	public abstract T getNeighbor(int index, int dir);
+	
+	// diagonal neighbors
+	
+	public abstract int getNumberOfDiagonalNeighbors();
+	
+	public T getDiagonalNeighbor(T cell, int dir)
+	{
+		return getDiagonalNeighbor(cell.getId(), dir);
+	}
+	
+	public abstract T getDiagonalNeighbor(int index, int dir);
+	
 	// rendering
 	
 	abstract void prepareRendering(float cell_border);

@@ -22,9 +22,22 @@ public class PlateTectonicsMap
 		default_type_ = type;
 	}
 	
+	public void clear()
+	{
+		for(int index = 0; index < map_.getNumberOfCells(); index++)
+		{
+			map_.getCell(index).type_ = default_type_;
+		}
+	}
+	
 	public Map<PlateTectonicsCell> getMap()
 	{
 		return map_;
+	}
+	
+	public PlateType getDefaultType()
+	{
+		return default_type_;
 	}
 
 	public int getCellSize()
@@ -32,14 +45,19 @@ public class PlateTectonicsMap
 		return cell_size_;
 	}
 	
-	public PlateType getType(int x, int y)
+	public PlateType getType(int index)
 	{
-		PlateTectonicsCell cell = map_.getCell(x, y);
+		PlateTectonicsCell cell = map_.getCell(index);
 		
 		if(cell == null)
 			return default_type_;
 		
 		return cell.type_;
+	}
+	
+	public PlateType getType(int x, int y)
+	{
+		return getType(map_.getIndex(x, y));
 	}
 	
 	public float getElevation(int x, int y)

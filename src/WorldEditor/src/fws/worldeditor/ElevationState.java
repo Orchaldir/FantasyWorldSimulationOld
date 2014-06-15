@@ -4,6 +4,7 @@ import fws.utility.map.*;
 import fws.utility.state.State;
 import fws.utility.Color;
 import fws.world.*;
+import fws.world.continent.GrowingAlgorithm;
 import fws.world.generation.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -19,6 +20,8 @@ public class ElevationState extends State
 	private PlateTectonicsMap tectonics_map_;
 	private PlateType land_type_;
 	private PlateType water_type_;
+	
+	private GrowingAlgorithm continent_algoithm_;
 	
 	private ColorRenderer<PlateTectonicsCell> tectonics_renderer_;
 	private ColorPlateTectonics color_tectonics_;
@@ -46,6 +49,8 @@ public class ElevationState extends State
 		
 		land_type_ = editor.getLandType();
 		water_type_ = editor.getWaterType();
+		
+		continent_algoithm_ = new GrowingAlgorithm(tectonics_map_, land_type_);
 		
 		color_tectonics_ = new ColorPlateTectonics();
 		tectonics_renderer_ = new ColorRenderer(tectonics_map_.getMap(), tec_render_size, tec_render_border, color_tectonics_);
@@ -103,6 +108,13 @@ public class ElevationState extends State
 			map_.setElevationAlgo(elevation_algo_noise_2_);
 			map_.generate();
 		}
+		else if(Keyboard.isKeyDown(Keyboard.KEY_C))
+		{
+			tectonics_map_.clear();
+			continent_algoithm_.update();
+			map_.generate();
+		}
+		
 	}
 	
 	@Override

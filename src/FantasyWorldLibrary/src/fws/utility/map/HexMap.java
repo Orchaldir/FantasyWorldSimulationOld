@@ -36,6 +36,37 @@ public class HexMap<T extends Cell> extends Map<T>
 		return getCell(column, row);
 	}
 	
+	// neighbors
+	
+	@Override
+	public int getNumberOfNeighbors()
+	{
+		return 6;
+	}
+
+	@Override
+	public T getNeighbor(int index, int dir)
+	{
+		if(dir < 0 || dir >= getNumberOfNeighbors())
+			return null;
+		
+		return null;
+	}
+	
+	// diagonal neighbors
+	
+	@Override
+	public int getNumberOfDiagonalNeighbors()
+	{
+		return 0;
+	}
+
+	@Override
+	public T getDiagonalNeighbor(int index, int dir)
+	{
+		return null;
+	}
+	
 	// rendering
 	
 	@Override
